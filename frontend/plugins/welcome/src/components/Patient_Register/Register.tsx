@@ -5,6 +5,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { Link as RouterLink } from 'react-router-dom';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Swal from 'sweetalert2'; // alert
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import {
   Container,
   Grid,
@@ -198,7 +199,7 @@ const Register: FC<{email:string}> = (email) => {
   return (
     <Page theme={pageTheme.service}>
       
-      <Header style={HeaderCustom} title={`Patient's Register`}>
+      <Header style={HeaderCustom} title={`ระบบลงทะเบียนผู้ป่วยใน`}>
       <AccountCircleIcon aria-controls="fade-menu" aria-haspopup="true"  fontSize="large" />
         <div style={{ marginLeft: 10 }}> </div>
         <Link component={RouterLink} to="/">
@@ -360,10 +361,18 @@ const Register: FC<{email:string}> = (email) => {
                 size="large"
                 startIcon={<SaveIcon />}
                 onClick={save}
-                
-                
               >
                 Save
+              </Button>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <Button
+                variant="contained"
+                color="amber"
+                size="large"
+                startIcon={<NavigateBeforeIcon />}
+                component={RouterLink} to="/homenurse"
+              >
+                Back
               </Button>
             </Grid>
           </Grid>
