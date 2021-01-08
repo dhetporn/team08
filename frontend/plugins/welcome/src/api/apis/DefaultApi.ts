@@ -24,6 +24,9 @@ import {
     ControllersPatient,
     ControllersPatientFromJSON,
     ControllersPatientToJSON,
+    ControllersPrescription,
+    ControllersPrescriptionFromJSON,
+    ControllersPrescriptionToJSON,
     ControllersRent,
     ControllersRentFromJSON,
     ControllersRentToJSON,
@@ -51,6 +54,9 @@ import {
     EntDoctor,
     EntDoctorFromJSON,
     EntDoctorToJSON,
+    EntDrug,
+    EntDrugFromJSON,
+    EntDrugToJSON,
     EntFund,
     EntFundFromJSON,
     EntFundToJSON,
@@ -69,6 +75,9 @@ import {
     EntPrefix,
     EntPrefixFromJSON,
     EntPrefixToJSON,
+    EntPrescription,
+    EntPrescriptionFromJSON,
+    EntPrescriptionToJSON,
     EntRent,
     EntRentFromJSON,
     EntRentToJSON,
@@ -111,6 +120,10 @@ export interface CreateDoctorRequest {
     doctor: EntDoctor;
 }
 
+export interface CreateDrugRequest {
+    drug: EntDrug;
+}
+
 export interface CreateFundRequest {
     fund: EntFund;
 }
@@ -133,6 +146,10 @@ export interface CreatePatientRequest {
 
 export interface CreatePrefixRequest {
     prefix: EntPrefix;
+}
+
+export interface CreatePrescriptionRequest {
+    prescription: ControllersPrescription;
 }
 
 export interface CreateRentRequest {
@@ -187,6 +204,10 @@ export interface DeletePatientRequest {
     id: number;
 }
 
+export interface DeletePrescriptionRequest {
+    id: number;
+}
+
 export interface DeleteRentRequest {
     id: number;
 }
@@ -219,6 +240,10 @@ export interface GetDoctorRequest {
     id: number;
 }
 
+export interface GetDrugRequest {
+    id: number;
+}
+
 export interface GetDrugAllergyRequest {
     id: number;
 }
@@ -244,6 +269,10 @@ export interface GetPatientRequest {
 }
 
 export interface GetPrefixRequest {
+    id: number;
+}
+
+export interface GetPrescriptionRequest {
     id: number;
 }
 
@@ -298,6 +327,11 @@ export interface ListDoctorRequest {
     offset?: number;
 }
 
+export interface ListDrugRequest {
+    limit?: number;
+    offset?: number;
+}
+
 export interface ListFundRequest {
     limit?: number;
     offset?: number;
@@ -324,6 +358,11 @@ export interface ListPatientRequest {
 }
 
 export interface ListPrefixRequest {
+    limit?: number;
+    offset?: number;
+}
+
+export interface ListPrescriptionRequest {
     limit?: number;
     offset?: number;
 }
@@ -391,6 +430,11 @@ export interface UpdateMedicalRequest {
 export interface UpdatePatientRequest {
     id: number;
     patient: EntPatient;
+}
+
+export interface UpdatePrescriptionRequest {
+    id: number;
+    drugAllergy: EntPrescription;
 }
 
 export interface UpdateRentRequest {
@@ -654,6 +698,41 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * Create drug
+     * Create drug
+     */
+    async createDrugRaw(requestParameters: CreateDrugRequest): Promise<runtime.ApiResponse<EntDrug>> {
+        if (requestParameters.drug === null || requestParameters.drug === undefined) {
+            throw new runtime.RequiredError('drug','Required parameter requestParameters.drug was null or undefined when calling createDrug.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/drugs`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EntDrugToJSON(requestParameters.drug),
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntDrugFromJSON(jsonValue));
+    }
+
+    /**
+     * Create drug
+     * Create drug
+     */
+    async createDrug(requestParameters: CreateDrugRequest): Promise<EntDrug> {
+        const response = await this.createDrugRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
      * Create fund
      * Create fund
      */
@@ -860,6 +939,41 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async createPrefix(requestParameters: CreatePrefixRequest): Promise<EntPrefix> {
         const response = await this.createPrefixRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * Create prescription
+     * Create prescription
+     */
+    async createPrescriptionRaw(requestParameters: CreatePrescriptionRequest): Promise<runtime.ApiResponse<EntPrescription>> {
+        if (requestParameters.prescription === null || requestParameters.prescription === undefined) {
+            throw new runtime.RequiredError('prescription','Required parameter requestParameters.prescription was null or undefined when calling createPrescription.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/prescriptions`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ControllersPrescriptionToJSON(requestParameters.prescription),
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntPrescriptionFromJSON(jsonValue));
+    }
+
+    /**
+     * Create prescription
+     * Create prescription
+     */
+    async createPrescription(requestParameters: CreatePrescriptionRequest): Promise<EntPrescription> {
+        const response = await this.createPrescriptionRaw(requestParameters);
         return await response.value();
     }
 
@@ -1292,6 +1406,38 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * get prescription by ID
+     * Delete a prescription entity by ID
+     */
+    async deletePrescriptionRaw(requestParameters: DeletePrescriptionRequest): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling deletePrescription.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/prescriptions/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * get prescription by ID
+     * Delete a prescription entity by ID
+     */
+    async deletePrescription(requestParameters: DeletePrescriptionRequest): Promise<object> {
+        const response = await this.deletePrescriptionRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
      * get rent by ID
      * Delete a rent entity by ID
      */
@@ -1548,6 +1694,38 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * get drug by ID
+     * Get a drug entity by ID
+     */
+    async getDrugRaw(requestParameters: GetDrugRequest): Promise<runtime.ApiResponse<EntDrug>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getDrug.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/drugs/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntDrugFromJSON(jsonValue));
+    }
+
+    /**
+     * get drug by ID
+     * Get a drug entity by ID
+     */
+    async getDrug(requestParameters: GetDrugRequest): Promise<EntDrug> {
+        const response = await this.getDrugRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
      * get diagnose by ID
      * Get a diagnose entity by ID
      */
@@ -1768,6 +1946,38 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async getPrefix(requestParameters: GetPrefixRequest): Promise<EntPrefix> {
         const response = await this.getPrefixRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * get prescription by ID
+     * Get a prescription entity by ID
+     */
+    async getPrescriptionRaw(requestParameters: GetPrescriptionRequest): Promise<runtime.ApiResponse<EntPrescription>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getPrescription.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/prescriptions/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntPrescriptionFromJSON(jsonValue));
+    }
+
+    /**
+     * get prescription by ID
+     * Get a prescription entity by ID
+     */
+    async getPrescription(requestParameters: GetPrescriptionRequest): Promise<EntPrescription> {
+        const response = await this.getPrescriptionRaw(requestParameters);
         return await response.value();
     }
 
@@ -2152,6 +2362,42 @@ export class DefaultApi extends runtime.BaseAPI {
     }
 
     /**
+     * list drug entities
+     * List drug entities
+     */
+    async listDrugRaw(requestParameters: ListDrugRequest): Promise<runtime.ApiResponse<Array<EntDrug>>> {
+        const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/drugs`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(EntDrugFromJSON));
+    }
+
+    /**
+     * list drug entities
+     * List drug entities
+     */
+    async listDrug(requestParameters: ListDrugRequest): Promise<Array<EntDrug>> {
+        const response = await this.listDrugRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
      * list fund entities
      * List fund entities
      */
@@ -2364,6 +2610,42 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async listPrefix(requestParameters: ListPrefixRequest): Promise<Array<EntPrefix>> {
         const response = await this.listPrefixRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * list prescription entities
+     * List prescription entities
+     */
+    async listPrescriptionRaw(requestParameters: ListPrescriptionRequest): Promise<runtime.ApiResponse<Array<EntPrescription>>> {
+        const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/prescriptions`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(EntPrescriptionFromJSON));
+    }
+
+    /**
+     * list prescription entities
+     * List prescription entities
+     */
+    async listPrescription(requestParameters: ListPrescriptionRequest): Promise<Array<EntPrescription>> {
+        const response = await this.listPrescriptionRaw(requestParameters);
         return await response.value();
     }
 
@@ -2859,6 +3141,45 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async updatePatient(requestParameters: UpdatePatientRequest): Promise<EntPatient> {
         const response = await this.updatePatientRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * update prescription by ID
+     * Update a prescription entity by ID
+     */
+    async updatePrescriptionRaw(requestParameters: UpdatePrescriptionRequest): Promise<runtime.ApiResponse<EntPrescription>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling updatePrescription.');
+        }
+
+        if (requestParameters.drugAllergy === null || requestParameters.drugAllergy === undefined) {
+            throw new runtime.RequiredError('drugAllergy','Required parameter requestParameters.drugAllergy was null or undefined when calling updatePrescription.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/prescriptions/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: EntPrescriptionToJSON(requestParameters.drugAllergy),
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => EntPrescriptionFromJSON(jsonValue));
+    }
+
+    /**
+     * update prescription by ID
+     * Update a prescription entity by ID
+     */
+    async updatePrescription(requestParameters: UpdatePrescriptionRequest): Promise<EntPrescription> {
+        const response = await this.updatePrescriptionRaw(requestParameters);
         return await response.value();
     }
 

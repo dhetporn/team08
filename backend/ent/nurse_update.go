@@ -8,6 +8,7 @@ import (
 
 	"github.com/dhetporn/team08/ent/nurse"
 	"github.com/dhetporn/team08/ent/predicate"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
@@ -67,6 +68,21 @@ func (nu *NurseUpdate) AddFromnurse(r ...*Rent) *NurseUpdate {
 	return nu.AddFromnurseIDs(ids...)
 }
 
+// AddNursePrescriptionIDs adds the nurse_prescription edge to Prescription by ids.
+func (nu *NurseUpdate) AddNursePrescriptionIDs(ids ...int) *NurseUpdate {
+	nu.mutation.AddNursePrescriptionIDs(ids...)
+	return nu
+}
+
+// AddNursePrescription adds the nurse_prescription edges to Prescription.
+func (nu *NurseUpdate) AddNursePrescription(p ...*Prescription) *NurseUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nu.AddNursePrescriptionIDs(ids...)
+}
+
 // Mutation returns the NurseMutation object of the builder.
 func (nu *NurseUpdate) Mutation() *NurseMutation {
 	return nu.mutation
@@ -85,6 +101,21 @@ func (nu *NurseUpdate) RemoveFromnurse(r ...*Rent) *NurseUpdate {
 		ids[i] = r[i].ID
 	}
 	return nu.RemoveFromnurseIDs(ids...)
+}
+
+// RemoveNursePrescriptionIDs removes the nurse_prescription edge to Prescription by ids.
+func (nu *NurseUpdate) RemoveNursePrescriptionIDs(ids ...int) *NurseUpdate {
+	nu.mutation.RemoveNursePrescriptionIDs(ids...)
+	return nu
+}
+
+// RemoveNursePrescription removes nurse_prescription edges to Prescription.
+func (nu *NurseUpdate) RemoveNursePrescription(p ...*Prescription) *NurseUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nu.RemoveNursePrescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
@@ -243,6 +274,44 @@ func (nu *NurseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if nodes := nu.mutation.RemovedNursePrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NursePrescriptionTable,
+			Columns: []string{nurse.NursePrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.NursePrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NursePrescriptionTable,
+			Columns: []string{nurse.NursePrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, nu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{nurse.Label}
@@ -300,6 +369,21 @@ func (nuo *NurseUpdateOne) AddFromnurse(r ...*Rent) *NurseUpdateOne {
 	return nuo.AddFromnurseIDs(ids...)
 }
 
+// AddNursePrescriptionIDs adds the nurse_prescription edge to Prescription by ids.
+func (nuo *NurseUpdateOne) AddNursePrescriptionIDs(ids ...int) *NurseUpdateOne {
+	nuo.mutation.AddNursePrescriptionIDs(ids...)
+	return nuo
+}
+
+// AddNursePrescription adds the nurse_prescription edges to Prescription.
+func (nuo *NurseUpdateOne) AddNursePrescription(p ...*Prescription) *NurseUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nuo.AddNursePrescriptionIDs(ids...)
+}
+
 // Mutation returns the NurseMutation object of the builder.
 func (nuo *NurseUpdateOne) Mutation() *NurseMutation {
 	return nuo.mutation
@@ -318,6 +402,21 @@ func (nuo *NurseUpdateOne) RemoveFromnurse(r ...*Rent) *NurseUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return nuo.RemoveFromnurseIDs(ids...)
+}
+
+// RemoveNursePrescriptionIDs removes the nurse_prescription edge to Prescription by ids.
+func (nuo *NurseUpdateOne) RemoveNursePrescriptionIDs(ids ...int) *NurseUpdateOne {
+	nuo.mutation.RemoveNursePrescriptionIDs(ids...)
+	return nuo
+}
+
+// RemoveNursePrescription removes nurse_prescription edges to Prescription.
+func (nuo *NurseUpdateOne) RemoveNursePrescription(p ...*Prescription) *NurseUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nuo.RemoveNursePrescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the updated entity.
@@ -466,6 +565,44 @@ func (nuo *NurseUpdateOne) sqlSave(ctx context.Context) (n *Nurse, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: rent.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nodes := nuo.mutation.RemovedNursePrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NursePrescriptionTable,
+			Columns: []string{nurse.NursePrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.NursePrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NursePrescriptionTable,
+			Columns: []string{nurse.NursePrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
 				},
 			},
 		}

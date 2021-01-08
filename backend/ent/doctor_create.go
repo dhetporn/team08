@@ -9,6 +9,7 @@ import (
 
 	"github.com/dhetporn/team08/ent/diagnose"
 	"github.com/dhetporn/team08/ent/doctor"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
 )
@@ -57,6 +58,21 @@ func (dc *DoctorCreate) AddDoctorDiagnose(d ...*Diagnose) *DoctorCreate {
 		ids[i] = d[i].ID
 	}
 	return dc.AddDoctorDiagnoseIDs(ids...)
+}
+
+// AddDoctorPrescriptionIDs adds the doctor_prescription edge to Prescription by ids.
+func (dc *DoctorCreate) AddDoctorPrescriptionIDs(ids ...int) *DoctorCreate {
+	dc.mutation.AddDoctorPrescriptionIDs(ids...)
+	return dc
+}
+
+// AddDoctorPrescription adds the doctor_prescription edges to Prescription.
+func (dc *DoctorCreate) AddDoctorPrescription(p ...*Prescription) *DoctorCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return dc.AddDoctorPrescriptionIDs(ids...)
 }
 
 // Mutation returns the DoctorMutation object of the builder.
@@ -201,6 +217,25 @@ func (dc *DoctorCreate) createSpec() (*Doctor, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: diagnose.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := dc.mutation.DoctorPrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   doctor.DoctorPrescriptionTable,
+			Columns: []string{doctor.DoctorPrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
 				},
 			},
 		}

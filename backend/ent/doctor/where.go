@@ -591,6 +591,34 @@ func HasDoctorDiagnoseWith(preds ...predicate.Diagnose) predicate.Doctor {
 	})
 }
 
+// HasDoctorPrescription applies the HasEdge predicate on the "doctor_prescription" edge.
+func HasDoctorPrescription() predicate.Doctor {
+	return predicate.Doctor(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DoctorPrescriptionTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DoctorPrescriptionTable, DoctorPrescriptionColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDoctorPrescriptionWith applies the HasEdge predicate on the "doctor_prescription" edge with a given conditions (other predicates).
+func HasDoctorPrescriptionWith(preds ...predicate.Prescription) predicate.Doctor {
+	return predicate.Doctor(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DoctorPrescriptionInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DoctorPrescriptionTable, DoctorPrescriptionColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups list of predicates with the AND operator between them.
 func And(predicates ...predicate.Doctor) predicate.Doctor {
 	return predicate.Doctor(func(s *sql.Selector) {

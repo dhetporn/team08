@@ -16,42 +16,23 @@ const (
 	// FieldPatientHeight holds the string denoting the patient_height field in the database.
 	FieldPatientHeight = "patient_height"
 
-	// EdgeFrompatient holds the string denoting the frompatient edge name in mutations.
-	EdgeFrompatient = "frompatient"
-	// EdgePatientCoveredPerson holds the string denoting the patient_coveredperson edge name in mutations.
-	EdgePatientCoveredPerson = "Patient_CoveredPerson"
-	// EdgePatientDiagnose holds the string denoting the patient_diagnose edge name in mutations.
-	EdgePatientDiagnose = "patient_diagnose"
 	// EdgeGender holds the string denoting the gender edge name in mutations.
 	EdgeGender = "gender"
 	// EdgePrefix holds the string denoting the prefix edge name in mutations.
 	EdgePrefix = "prefix"
 	// EdgeBloodtype holds the string denoting the bloodtype edge name in mutations.
 	EdgeBloodtype = "bloodtype"
+	// EdgeFrompatient holds the string denoting the frompatient edge name in mutations.
+	EdgeFrompatient = "frompatient"
+	// EdgePatientCoveredPerson holds the string denoting the patient_coveredperson edge name in mutations.
+	EdgePatientCoveredPerson = "Patient_CoveredPerson"
+	// EdgePatientDiagnose holds the string denoting the patient_diagnose edge name in mutations.
+	EdgePatientDiagnose = "patient_diagnose"
+	// EdgePatientPrescription holds the string denoting the patient_prescription edge name in mutations.
+	EdgePatientPrescription = "patient_prescription"
 
 	// Table holds the table name of the patient in the database.
 	Table = "patients"
-	// FrompatientTable is the table the holds the frompatient relation/edge.
-	FrompatientTable = "rents"
-	// FrompatientInverseTable is the table name for the Rent entity.
-	// It exists in this package in order to avoid circular dependency with the "rent" package.
-	FrompatientInverseTable = "rents"
-	// FrompatientColumn is the table column denoting the frompatient relation/edge.
-	FrompatientColumn = "Patient_id"
-	// PatientCoveredPersonTable is the table the holds the Patient_CoveredPerson relation/edge.
-	PatientCoveredPersonTable = "covered_persons"
-	// PatientCoveredPersonInverseTable is the table name for the CoveredPerson entity.
-	// It exists in this package in order to avoid circular dependency with the "coveredperson" package.
-	PatientCoveredPersonInverseTable = "covered_persons"
-	// PatientCoveredPersonColumn is the table column denoting the Patient_CoveredPerson relation/edge.
-	PatientCoveredPersonColumn = "Patient_id"
-	// PatientDiagnoseTable is the table the holds the patient_diagnose relation/edge.
-	PatientDiagnoseTable = "diagnoses"
-	// PatientDiagnoseInverseTable is the table name for the Diagnose entity.
-	// It exists in this package in order to avoid circular dependency with the "diagnose" package.
-	PatientDiagnoseInverseTable = "diagnoses"
-	// PatientDiagnoseColumn is the table column denoting the patient_diagnose relation/edge.
-	PatientDiagnoseColumn = "patient_id"
 	// GenderTable is the table the holds the gender relation/edge.
 	GenderTable = "patients"
 	// GenderInverseTable is the table name for the Gender entity.
@@ -73,6 +54,34 @@ const (
 	BloodtypeInverseTable = "bloodtypes"
 	// BloodtypeColumn is the table column denoting the bloodtype relation/edge.
 	BloodtypeColumn = "bloodtype_id"
+	// FrompatientTable is the table the holds the frompatient relation/edge.
+	FrompatientTable = "rents"
+	// FrompatientInverseTable is the table name for the Rent entity.
+	// It exists in this package in order to avoid circular dependency with the "rent" package.
+	FrompatientInverseTable = "rents"
+	// FrompatientColumn is the table column denoting the frompatient relation/edge.
+	FrompatientColumn = "Patient_id"
+	// PatientCoveredPersonTable is the table the holds the Patient_CoveredPerson relation/edge.
+	PatientCoveredPersonTable = "covered_persons"
+	// PatientCoveredPersonInverseTable is the table name for the CoveredPerson entity.
+	// It exists in this package in order to avoid circular dependency with the "coveredperson" package.
+	PatientCoveredPersonInverseTable = "covered_persons"
+	// PatientCoveredPersonColumn is the table column denoting the Patient_CoveredPerson relation/edge.
+	PatientCoveredPersonColumn = "Patient_id"
+	// PatientDiagnoseTable is the table the holds the patient_diagnose relation/edge.
+	PatientDiagnoseTable = "diagnoses"
+	// PatientDiagnoseInverseTable is the table name for the Diagnose entity.
+	// It exists in this package in order to avoid circular dependency with the "diagnose" package.
+	PatientDiagnoseInverseTable = "diagnoses"
+	// PatientDiagnoseColumn is the table column denoting the patient_diagnose relation/edge.
+	PatientDiagnoseColumn = "patient_id"
+	// PatientPrescriptionTable is the table the holds the patient_prescription relation/edge.
+	PatientPrescriptionTable = "prescriptions"
+	// PatientPrescriptionInverseTable is the table name for the Prescription entity.
+	// It exists in this package in order to avoid circular dependency with the "prescription" package.
+	PatientPrescriptionInverseTable = "prescriptions"
+	// PatientPrescriptionColumn is the table column denoting the patient_prescription relation/edge.
+	PatientPrescriptionColumn = "patient_id"
 )
 
 // Columns holds all SQL columns for patient fields.

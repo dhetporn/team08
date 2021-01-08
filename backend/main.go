@@ -128,6 +128,17 @@ type Department struct {
 	DepartmentName string
 }
 
+// --------------------------------- bua ----------------------------------------
+//Drugs struct
+type Drugs struct {
+	Drug []Drug
+}
+
+//Drug struct
+type Drug struct {
+	Name string
+}
+
 // @title SUT SA Example API Playlist Vidoe
 // @version 1.0
 // @description This is a sample server for SUT SE 2563
@@ -204,6 +215,9 @@ func main() {
 	controllers.NewDiseaseController(v1, client)
 	controllers.NewDepartmentController(v1, client)
 	controllers.NewDiagnoseController(v1, client)
+	// --------------------------------- bua controller ----------------------------------------
+	controllers.NewDrugController(v1, client)
+	controllers.NewPrescriptionController(v1, client)
 	// --------------------------------- gop & kao Set Data ----------------------------------------
 	// Set Nuses Data
 	nurses := Nurses{
@@ -434,7 +448,7 @@ func main() {
 			Save(context.Background())
 	}
 
-	// --------------------------------- mild Set Data ----------------------------------------
+	// --------------------------------- non Set Data ----------------------------------------
 	// Set Doctor Data
 	doctors := Doctors{
 		Doctor: []Doctor{
@@ -466,6 +480,27 @@ func main() {
 		client.Department.
 			Create().
 			SetDepartmentName(dep).
+			Save(context.Background())
+	}
+	// --------------------------------- bua Set Data ----------------------------------------
+	// Set Drugs Data
+	drugs := Drugs{
+		Drug: []Drug{
+			Drug{"Paracetamol"},
+			Drug{"ยาธาตุน้ำขาว"},
+			Drug{"Aspirin"},
+			Drug{"ยาธาตุน้ำแดง"},
+			Drug{"ยาแก้ไอน้ำดำ"},
+			Drug{"ENO"},
+			Drug{"Decolgen"},
+		},
+	}
+
+	for _, dr := range drugs.Drug {
+
+		client.Drug.
+			Create().
+			SetDrugName(dr.Name).
 			Save(context.Background())
 	}
 

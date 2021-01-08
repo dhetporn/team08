@@ -83,11 +83,12 @@ func (ctl *RentController) CreateRent(c *gin.Context) {
 		return
 	}
 
-	time, err := time.Parse(time.RFC3339, obj.Added)
+
+	datetime, err := time.Parse(time.RFC3339, obj.Added)
 
 	r, err := ctl.client.Rent.
 		Create().
-		SetAddedTime(time).
+		SetAddedTime(datetime).
 		SetRoom(ro).
 		SetPatient(p).
 		SetNurse(n).

@@ -159,6 +159,18 @@ var (
 		PrimaryKey:  []*schema.Column{DoctorsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
+	// DrugsColumns holds the columns for the "drugs" table.
+	DrugsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "drug_name", Type: field.TypeString},
+	}
+	// DrugsTable holds the schema information for the "drugs" table.
+	DrugsTable = &schema.Table{
+		Name:        "drugs",
+		Columns:     DrugsColumns,
+		PrimaryKey:  []*schema.Column{DrugsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// FundsColumns holds the columns for the "funds" table.
 	FundsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -265,6 +277,52 @@ var (
 		PrimaryKey:  []*schema.Column{PrefixesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
+	// PrescriptionsColumns holds the columns for the "prescriptions" table.
+	PrescriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "prescrip_note", Type: field.TypeString},
+		{Name: "prescrip_date_time", Type: field.TypeTime},
+		{Name: "doctor_id", Type: field.TypeInt, Nullable: true},
+		{Name: "drug_id", Type: field.TypeInt, Nullable: true},
+		{Name: "nurse_id", Type: field.TypeInt, Nullable: true},
+		{Name: "patient_id", Type: field.TypeInt, Nullable: true},
+	}
+	// PrescriptionsTable holds the schema information for the "prescriptions" table.
+	PrescriptionsTable = &schema.Table{
+		Name:       "prescriptions",
+		Columns:    PrescriptionsColumns,
+		PrimaryKey: []*schema.Column{PrescriptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:  "prescriptions_doctors_doctor_prescription",
+				Columns: []*schema.Column{PrescriptionsColumns[3]},
+
+				RefColumns: []*schema.Column{DoctorsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "prescriptions_drugs_drug_prescription",
+				Columns: []*schema.Column{PrescriptionsColumns[4]},
+
+				RefColumns: []*schema.Column{DrugsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "prescriptions_nurses_nurse_prescription",
+				Columns: []*schema.Column{PrescriptionsColumns[5]},
+
+				RefColumns: []*schema.Column{NursesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "prescriptions_patients_patient_prescription",
+				Columns: []*schema.Column{PrescriptionsColumns[6]},
+
+				RefColumns: []*schema.Column{PatientsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// RentsColumns holds the columns for the "rents" table.
 	RentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -362,12 +420,14 @@ var (
 		DiagnosesTable,
 		DiseasesTable,
 		DoctorsTable,
+		DrugsTable,
 		FundsTable,
 		GendersTable,
 		MedicalsTable,
 		NursesTable,
 		PatientsTable,
 		PrefixesTable,
+		PrescriptionsTable,
 		RentsTable,
 		RoomsTable,
 		RoomtypesTable,
@@ -387,6 +447,10 @@ func init() {
 	PatientsTable.ForeignKeys[0].RefTable = BloodtypesTable
 	PatientsTable.ForeignKeys[1].RefTable = GendersTable
 	PatientsTable.ForeignKeys[2].RefTable = PrefixesTable
+	PrescriptionsTable.ForeignKeys[0].RefTable = DoctorsTable
+	PrescriptionsTable.ForeignKeys[1].RefTable = DrugsTable
+	PrescriptionsTable.ForeignKeys[2].RefTable = NursesTable
+	PrescriptionsTable.ForeignKeys[3].RefTable = PatientsTable
 	RentsTable.ForeignKeys[0].RefTable = NursesTable
 	RentsTable.ForeignKeys[1].RefTable = PatientsTable
 	RentsTable.ForeignKeys[2].RefTable = RoomsTable

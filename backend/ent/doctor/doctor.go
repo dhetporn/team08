@@ -18,6 +18,8 @@ const (
 
 	// EdgeDoctorDiagnose holds the string denoting the doctor_diagnose edge name in mutations.
 	EdgeDoctorDiagnose = "doctor_diagnose"
+	// EdgeDoctorPrescription holds the string denoting the doctor_prescription edge name in mutations.
+	EdgeDoctorPrescription = "doctor_prescription"
 
 	// Table holds the table name of the doctor in the database.
 	Table = "doctors"
@@ -28,6 +30,13 @@ const (
 	DoctorDiagnoseInverseTable = "diagnoses"
 	// DoctorDiagnoseColumn is the table column denoting the doctor_diagnose relation/edge.
 	DoctorDiagnoseColumn = "doctor_id"
+	// DoctorPrescriptionTable is the table the holds the doctor_prescription relation/edge.
+	DoctorPrescriptionTable = "prescriptions"
+	// DoctorPrescriptionInverseTable is the table name for the Prescription entity.
+	// It exists in this package in order to avoid circular dependency with the "prescription" package.
+	DoctorPrescriptionInverseTable = "prescriptions"
+	// DoctorPrescriptionColumn is the table column denoting the doctor_prescription relation/edge.
+	DoctorPrescriptionColumn = "doctor_id"
 )
 
 // Columns holds all SQL columns for doctor fields.

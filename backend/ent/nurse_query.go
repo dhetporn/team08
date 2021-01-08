@@ -11,6 +11,7 @@ import (
 
 	"github.com/dhetporn/team08/ent/nurse"
 	"github.com/dhetporn/team08/ent/predicate"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
@@ -26,7 +27,8 @@ type NurseQuery struct {
 	unique     []string
 	predicates []predicate.Nurse
 	// eager-loading edges.
-	withFromnurse *RentQuery
+	withFromnurse         *RentQuery
+	withNursePrescription *PrescriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -67,6 +69,24 @@ func (nq *NurseQuery) QueryFromnurse() *RentQuery {
 			sqlgraph.From(nurse.Table, nurse.FieldID, nq.sqlQuery()),
 			sqlgraph.To(rent.Table, rent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, nurse.FromnurseTable, nurse.FromnurseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryNursePrescription chains the current query on the nurse_prescription edge.
+func (nq *NurseQuery) QueryNursePrescription() *PrescriptionQuery {
+	query := &PrescriptionQuery{config: nq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(nurse.Table, nurse.FieldID, nq.sqlQuery()),
+			sqlgraph.To(prescription.Table, prescription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, nurse.NursePrescriptionTable, nurse.NursePrescriptionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
 		return fromU, nil
@@ -264,6 +284,17 @@ func (nq *NurseQuery) WithFromnurse(opts ...func(*RentQuery)) *NurseQuery {
 	return nq
 }
 
+//  WithNursePrescription tells the query-builder to eager-loads the nodes that are connected to
+// the "nurse_prescription" edge. The optional arguments used to configure the query builder of the edge.
+func (nq *NurseQuery) WithNursePrescription(opts ...func(*PrescriptionQuery)) *NurseQuery {
+	query := &PrescriptionQuery{config: nq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withNursePrescription = query
+	return nq
+}
+
 // GroupBy used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -330,8 +361,9 @@ func (nq *NurseQuery) sqlAll(ctx context.Context) ([]*Nurse, error) {
 	var (
 		nodes       = []*Nurse{}
 		_spec       = nq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			nq.withFromnurse != nil,
+			nq.withNursePrescription != nil,
 		}
 	)
 	_spec.ScanValues = func() []interface{} {
@@ -380,6 +412,34 @@ func (nq *NurseQuery) sqlAll(ctx context.Context) ([]*Nurse, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "nurse_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Fromnurse = append(node.Edges.Fromnurse, n)
+		}
+	}
+
+	if query := nq.withNursePrescription; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Nurse)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.withFKs = true
+		query.Where(predicate.Prescription(func(s *sql.Selector) {
+			s.Where(sql.InValues(nurse.NursePrescriptionColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.nurse_id
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "nurse_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "nurse_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.NursePrescription = append(node.Edges.NursePrescription, n)
 		}
 	}
 

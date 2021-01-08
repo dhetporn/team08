@@ -26,6 +26,8 @@ type Tx struct {
 	Disease *DiseaseClient
 	// Doctor is the client for interacting with the Doctor builders.
 	Doctor *DoctorClient
+	// Drug is the client for interacting with the Drug builders.
+	Drug *DrugClient
 	// Fund is the client for interacting with the Fund builders.
 	Fund *FundClient
 	// Gender is the client for interacting with the Gender builders.
@@ -38,6 +40,8 @@ type Tx struct {
 	Patient *PatientClient
 	// Prefix is the client for interacting with the Prefix builders.
 	Prefix *PrefixClient
+	// Prescription is the client for interacting with the Prescription builders.
+	Prescription *PrescriptionClient
 	// Rent is the client for interacting with the Rent builders.
 	Rent *RentClient
 	// Room is the client for interacting with the Room builders.
@@ -188,12 +192,14 @@ func (tx *Tx) init() {
 	tx.Diagnose = NewDiagnoseClient(tx.config)
 	tx.Disease = NewDiseaseClient(tx.config)
 	tx.Doctor = NewDoctorClient(tx.config)
+	tx.Drug = NewDrugClient(tx.config)
 	tx.Fund = NewFundClient(tx.config)
 	tx.Gender = NewGenderClient(tx.config)
 	tx.Medical = NewMedicalClient(tx.config)
 	tx.Nurse = NewNurseClient(tx.config)
 	tx.Patient = NewPatientClient(tx.config)
 	tx.Prefix = NewPrefixClient(tx.config)
+	tx.Prescription = NewPrescriptionClient(tx.config)
 	tx.Rent = NewRentClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
 	tx.Roomtype = NewRoomtypeClient(tx.config)

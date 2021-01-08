@@ -9,6 +9,7 @@ import (
 	"github.com/dhetporn/team08/ent/diagnose"
 	"github.com/dhetporn/team08/ent/doctor"
 	"github.com/dhetporn/team08/ent/predicate"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
@@ -67,6 +68,21 @@ func (du *DoctorUpdate) AddDoctorDiagnose(d ...*Diagnose) *DoctorUpdate {
 	return du.AddDoctorDiagnoseIDs(ids...)
 }
 
+// AddDoctorPrescriptionIDs adds the doctor_prescription edge to Prescription by ids.
+func (du *DoctorUpdate) AddDoctorPrescriptionIDs(ids ...int) *DoctorUpdate {
+	du.mutation.AddDoctorPrescriptionIDs(ids...)
+	return du
+}
+
+// AddDoctorPrescription adds the doctor_prescription edges to Prescription.
+func (du *DoctorUpdate) AddDoctorPrescription(p ...*Prescription) *DoctorUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return du.AddDoctorPrescriptionIDs(ids...)
+}
+
 // Mutation returns the DoctorMutation object of the builder.
 func (du *DoctorUpdate) Mutation() *DoctorMutation {
 	return du.mutation
@@ -85,6 +101,21 @@ func (du *DoctorUpdate) RemoveDoctorDiagnose(d ...*Diagnose) *DoctorUpdate {
 		ids[i] = d[i].ID
 	}
 	return du.RemoveDoctorDiagnoseIDs(ids...)
+}
+
+// RemoveDoctorPrescriptionIDs removes the doctor_prescription edge to Prescription by ids.
+func (du *DoctorUpdate) RemoveDoctorPrescriptionIDs(ids ...int) *DoctorUpdate {
+	du.mutation.RemoveDoctorPrescriptionIDs(ids...)
+	return du
+}
+
+// RemoveDoctorPrescription removes doctor_prescription edges to Prescription.
+func (du *DoctorUpdate) RemoveDoctorPrescription(p ...*Prescription) *DoctorUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return du.RemoveDoctorPrescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
@@ -243,6 +274,44 @@ func (du *DoctorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if nodes := du.mutation.RemovedDoctorPrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   doctor.DoctorPrescriptionTable,
+			Columns: []string{doctor.DoctorPrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := du.mutation.DoctorPrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   doctor.DoctorPrescriptionTable,
+			Columns: []string{doctor.DoctorPrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{doctor.Label}
@@ -300,6 +369,21 @@ func (duo *DoctorUpdateOne) AddDoctorDiagnose(d ...*Diagnose) *DoctorUpdateOne {
 	return duo.AddDoctorDiagnoseIDs(ids...)
 }
 
+// AddDoctorPrescriptionIDs adds the doctor_prescription edge to Prescription by ids.
+func (duo *DoctorUpdateOne) AddDoctorPrescriptionIDs(ids ...int) *DoctorUpdateOne {
+	duo.mutation.AddDoctorPrescriptionIDs(ids...)
+	return duo
+}
+
+// AddDoctorPrescription adds the doctor_prescription edges to Prescription.
+func (duo *DoctorUpdateOne) AddDoctorPrescription(p ...*Prescription) *DoctorUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return duo.AddDoctorPrescriptionIDs(ids...)
+}
+
 // Mutation returns the DoctorMutation object of the builder.
 func (duo *DoctorUpdateOne) Mutation() *DoctorMutation {
 	return duo.mutation
@@ -318,6 +402,21 @@ func (duo *DoctorUpdateOne) RemoveDoctorDiagnose(d ...*Diagnose) *DoctorUpdateOn
 		ids[i] = d[i].ID
 	}
 	return duo.RemoveDoctorDiagnoseIDs(ids...)
+}
+
+// RemoveDoctorPrescriptionIDs removes the doctor_prescription edge to Prescription by ids.
+func (duo *DoctorUpdateOne) RemoveDoctorPrescriptionIDs(ids ...int) *DoctorUpdateOne {
+	duo.mutation.RemoveDoctorPrescriptionIDs(ids...)
+	return duo
+}
+
+// RemoveDoctorPrescription removes doctor_prescription edges to Prescription.
+func (duo *DoctorUpdateOne) RemoveDoctorPrescription(p ...*Prescription) *DoctorUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return duo.RemoveDoctorPrescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the updated entity.
@@ -466,6 +565,44 @@ func (duo *DoctorUpdateOne) sqlSave(ctx context.Context) (d *Doctor, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: diagnose.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nodes := duo.mutation.RemovedDoctorPrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   doctor.DoctorPrescriptionTable,
+			Columns: []string{doctor.DoctorPrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := duo.mutation.DoctorPrescriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   doctor.DoctorPrescriptionTable,
+			Columns: []string{doctor.DoctorPrescriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prescription.FieldID,
 				},
 			},
 		}

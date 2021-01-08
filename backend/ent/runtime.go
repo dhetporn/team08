@@ -3,17 +3,21 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/dhetporn/team08/ent/bloodtype"
 	"github.com/dhetporn/team08/ent/certificate"
 	"github.com/dhetporn/team08/ent/department"
 	"github.com/dhetporn/team08/ent/disease"
 	"github.com/dhetporn/team08/ent/doctor"
+	"github.com/dhetporn/team08/ent/drug"
 	"github.com/dhetporn/team08/ent/fund"
 	"github.com/dhetporn/team08/ent/gender"
 	"github.com/dhetporn/team08/ent/medical"
 	"github.com/dhetporn/team08/ent/nurse"
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/prefix"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/room"
 	"github.com/dhetporn/team08/ent/roomtype"
 	"github.com/dhetporn/team08/ent/schema"
@@ -66,6 +70,12 @@ func init() {
 	doctorDescDoctorTel := doctorFields[3].Descriptor()
 	// doctor.DoctorTelValidator is a validator for the "Doctor_tel" field. It is called by the builders before save.
 	doctor.DoctorTelValidator = doctorDescDoctorTel.Validators[0].(func(string) error)
+	drugFields := schema.Drug{}.Fields()
+	_ = drugFields
+	// drugDescDrugName is the schema descriptor for Drug_Name field.
+	drugDescDrugName := drugFields[0].Descriptor()
+	// drug.DrugNameValidator is a validator for the "Drug_Name" field. It is called by the builders before save.
+	drug.DrugNameValidator = drugDescDrugName.Validators[0].(func(string) error)
 	fundFields := schema.Fund{}.Fields()
 	_ = fundFields
 	// fundDescFundName is the schema descriptor for Fund_Name field.
@@ -138,6 +148,12 @@ func init() {
 	prefixDescPname := prefixFields[0].Descriptor()
 	// prefix.PnameValidator is a validator for the "Pname" field. It is called by the builders before save.
 	prefix.PnameValidator = prefixDescPname.Validators[0].(func(string) error)
+	prescriptionFields := schema.Prescription{}.Fields()
+	_ = prescriptionFields
+	// prescriptionDescPrescripDateTime is the schema descriptor for Prescrip_DateTime field.
+	prescriptionDescPrescripDateTime := prescriptionFields[1].Descriptor()
+	// prescription.DefaultPrescripDateTime holds the default value on creation for the Prescrip_DateTime field.
+	prescription.DefaultPrescripDateTime = prescriptionDescPrescripDateTime.Default.(func() time.Time)
 	roomFields := schema.Room{}.Fields()
 	_ = roomFields
 	// roomDescName is the schema descriptor for name field.

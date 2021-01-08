@@ -145,7 +145,7 @@ const Rent: FC<{email:string}> = (email) => {
   const rents = {
     patient: patientID,
     room: roomID,
-    added: addeds,
+    added: addeds+":00+00:00",
     nurse: nurseID,
   };
 
@@ -300,8 +300,8 @@ const Rent: FC<{email:string}> = (email) => {
                 <TextField
                   label="เลือกเวลา"
                   name="added"
-                  type="date"
-                  value={addeds || ''} // (undefined || '') = ''
+                  type="datetime-local"
+                  value={addeds } // (undefined || '') = ''
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,

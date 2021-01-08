@@ -32,9 +32,11 @@ type Nurse struct {
 type NurseEdges struct {
 	// Fromnurse holds the value of the fromnurse edge.
 	Fromnurse []*Rent
+	// NursePrescription holds the value of the nurse_prescription edge.
+	NursePrescription []*Prescription
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // FromnurseOrErr returns the Fromnurse value or an error if the edge
@@ -44,6 +46,15 @@ func (e NurseEdges) FromnurseOrErr() ([]*Rent, error) {
 		return e.Fromnurse, nil
 	}
 	return nil, &NotLoadedError{edge: "fromnurse"}
+}
+
+// NursePrescriptionOrErr returns the NursePrescription value or an error if the edge
+// was not loaded in eager-loading.
+func (e NurseEdges) NursePrescriptionOrErr() ([]*Prescription, error) {
+	if e.loadedTypes[1] {
+		return e.NursePrescription, nil
+	}
+	return nil, &NotLoadedError{edge: "nurse_prescription"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -95,6 +106,11 @@ func (n *Nurse) assignValues(values ...interface{}) error {
 // QueryFromnurse queries the fromnurse edge of the Nurse.
 func (n *Nurse) QueryFromnurse() *RentQuery {
 	return (&NurseClient{config: n.config}).QueryFromnurse(n)
+}
+
+// QueryNursePrescription queries the nurse_prescription edge of the Nurse.
+func (n *Nurse) QueryNursePrescription() *PrescriptionQuery {
+	return (&NurseClient{config: n.config}).QueryNursePrescription(n)
 }
 
 // Update returns a builder for updating this Nurse.

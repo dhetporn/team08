@@ -32,9 +32,11 @@ type Doctor struct {
 type DoctorEdges struct {
 	// DoctorDiagnose holds the value of the doctor_diagnose edge.
 	DoctorDiagnose []*Diagnose
+	// DoctorPrescription holds the value of the doctor_prescription edge.
+	DoctorPrescription []*Prescription
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // DoctorDiagnoseOrErr returns the DoctorDiagnose value or an error if the edge
@@ -44,6 +46,15 @@ func (e DoctorEdges) DoctorDiagnoseOrErr() ([]*Diagnose, error) {
 		return e.DoctorDiagnose, nil
 	}
 	return nil, &NotLoadedError{edge: "doctor_diagnose"}
+}
+
+// DoctorPrescriptionOrErr returns the DoctorPrescription value or an error if the edge
+// was not loaded in eager-loading.
+func (e DoctorEdges) DoctorPrescriptionOrErr() ([]*Prescription, error) {
+	if e.loadedTypes[1] {
+		return e.DoctorPrescription, nil
+	}
+	return nil, &NotLoadedError{edge: "doctor_prescription"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -95,6 +106,11 @@ func (d *Doctor) assignValues(values ...interface{}) error {
 // QueryDoctorDiagnose queries the doctor_diagnose edge of the Doctor.
 func (d *Doctor) QueryDoctorDiagnose() *DiagnoseQuery {
 	return (&DoctorClient{config: d.config}).QueryDoctorDiagnose(d)
+}
+
+// QueryDoctorPrescription queries the doctor_prescription edge of the Doctor.
+func (d *Doctor) QueryDoctorPrescription() *PrescriptionQuery {
+	return (&DoctorClient{config: d.config}).QueryDoctorPrescription(d)
 }
 
 // Update returns a builder for updating this Doctor.

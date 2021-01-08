@@ -16,6 +16,7 @@ import (
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/dhetporn/team08/ent/prefix"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
@@ -31,12 +32,13 @@ type PatientQuery struct {
 	unique     []string
 	predicates []predicate.Patient
 	// eager-loading edges.
-	withFrompatient          *RentQuery
-	withPatientCoveredPerson *CoveredPersonQuery
-	withPatientDiagnose      *DiagnoseQuery
 	withGender               *GenderQuery
 	withPrefix               *PrefixQuery
 	withBloodtype            *BloodtypeQuery
+	withFrompatient          *RentQuery
+	withPatientCoveredPerson *CoveredPersonQuery
+	withPatientDiagnose      *DiagnoseQuery
+	withPatientPrescription  *PrescriptionQuery
 	withFKs                  bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -65,6 +67,60 @@ func (pq *PatientQuery) Offset(offset int) *PatientQuery {
 func (pq *PatientQuery) Order(o ...OrderFunc) *PatientQuery {
 	pq.order = append(pq.order, o...)
 	return pq
+}
+
+// QueryGender chains the current query on the gender edge.
+func (pq *PatientQuery) QueryGender() *GenderQuery {
+	query := &GenderQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(patient.Table, patient.FieldID, pq.sqlQuery()),
+			sqlgraph.To(gender.Table, gender.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, patient.GenderTable, patient.GenderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPrefix chains the current query on the prefix edge.
+func (pq *PatientQuery) QueryPrefix() *PrefixQuery {
+	query := &PrefixQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(patient.Table, patient.FieldID, pq.sqlQuery()),
+			sqlgraph.To(prefix.Table, prefix.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, patient.PrefixTable, patient.PrefixColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBloodtype chains the current query on the bloodtype edge.
+func (pq *PatientQuery) QueryBloodtype() *BloodtypeQuery {
+	query := &BloodtypeQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(patient.Table, patient.FieldID, pq.sqlQuery()),
+			sqlgraph.To(bloodtype.Table, bloodtype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, patient.BloodtypeTable, patient.BloodtypeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryFrompatient chains the current query on the frompatient edge.
@@ -121,53 +177,17 @@ func (pq *PatientQuery) QueryPatientDiagnose() *DiagnoseQuery {
 	return query
 }
 
-// QueryGender chains the current query on the gender edge.
-func (pq *PatientQuery) QueryGender() *GenderQuery {
-	query := &GenderQuery{config: pq.config}
+// QueryPatientPrescription chains the current query on the patient_prescription edge.
+func (pq *PatientQuery) QueryPatientPrescription() *PrescriptionQuery {
+	query := &PrescriptionQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(patient.Table, patient.FieldID, pq.sqlQuery()),
-			sqlgraph.To(gender.Table, gender.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, patient.GenderTable, patient.GenderColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryPrefix chains the current query on the prefix edge.
-func (pq *PatientQuery) QueryPrefix() *PrefixQuery {
-	query := &PrefixQuery{config: pq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(patient.Table, patient.FieldID, pq.sqlQuery()),
-			sqlgraph.To(prefix.Table, prefix.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, patient.PrefixTable, patient.PrefixColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryBloodtype chains the current query on the bloodtype edge.
-func (pq *PatientQuery) QueryBloodtype() *BloodtypeQuery {
-	query := &BloodtypeQuery{config: pq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(patient.Table, patient.FieldID, pq.sqlQuery()),
-			sqlgraph.To(bloodtype.Table, bloodtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, patient.BloodtypeTable, patient.BloodtypeColumn),
+			sqlgraph.To(prescription.Table, prescription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, patient.PatientPrescriptionTable, patient.PatientPrescriptionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -354,6 +374,39 @@ func (pq *PatientQuery) Clone() *PatientQuery {
 	}
 }
 
+//  WithGender tells the query-builder to eager-loads the nodes that are connected to
+// the "gender" edge. The optional arguments used to configure the query builder of the edge.
+func (pq *PatientQuery) WithGender(opts ...func(*GenderQuery)) *PatientQuery {
+	query := &GenderQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withGender = query
+	return pq
+}
+
+//  WithPrefix tells the query-builder to eager-loads the nodes that are connected to
+// the "prefix" edge. The optional arguments used to configure the query builder of the edge.
+func (pq *PatientQuery) WithPrefix(opts ...func(*PrefixQuery)) *PatientQuery {
+	query := &PrefixQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withPrefix = query
+	return pq
+}
+
+//  WithBloodtype tells the query-builder to eager-loads the nodes that are connected to
+// the "bloodtype" edge. The optional arguments used to configure the query builder of the edge.
+func (pq *PatientQuery) WithBloodtype(opts ...func(*BloodtypeQuery)) *PatientQuery {
+	query := &BloodtypeQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withBloodtype = query
+	return pq
+}
+
 //  WithFrompatient tells the query-builder to eager-loads the nodes that are connected to
 // the "frompatient" edge. The optional arguments used to configure the query builder of the edge.
 func (pq *PatientQuery) WithFrompatient(opts ...func(*RentQuery)) *PatientQuery {
@@ -387,36 +440,14 @@ func (pq *PatientQuery) WithPatientDiagnose(opts ...func(*DiagnoseQuery)) *Patie
 	return pq
 }
 
-//  WithGender tells the query-builder to eager-loads the nodes that are connected to
-// the "gender" edge. The optional arguments used to configure the query builder of the edge.
-func (pq *PatientQuery) WithGender(opts ...func(*GenderQuery)) *PatientQuery {
-	query := &GenderQuery{config: pq.config}
+//  WithPatientPrescription tells the query-builder to eager-loads the nodes that are connected to
+// the "patient_prescription" edge. The optional arguments used to configure the query builder of the edge.
+func (pq *PatientQuery) WithPatientPrescription(opts ...func(*PrescriptionQuery)) *PatientQuery {
+	query := &PrescriptionQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withGender = query
-	return pq
-}
-
-//  WithPrefix tells the query-builder to eager-loads the nodes that are connected to
-// the "prefix" edge. The optional arguments used to configure the query builder of the edge.
-func (pq *PatientQuery) WithPrefix(opts ...func(*PrefixQuery)) *PatientQuery {
-	query := &PrefixQuery{config: pq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	pq.withPrefix = query
-	return pq
-}
-
-//  WithBloodtype tells the query-builder to eager-loads the nodes that are connected to
-// the "bloodtype" edge. The optional arguments used to configure the query builder of the edge.
-func (pq *PatientQuery) WithBloodtype(opts ...func(*BloodtypeQuery)) *PatientQuery {
-	query := &BloodtypeQuery{config: pq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	pq.withBloodtype = query
+	pq.withPatientPrescription = query
 	return pq
 }
 
@@ -487,13 +518,14 @@ func (pq *PatientQuery) sqlAll(ctx context.Context) ([]*Patient, error) {
 		nodes       = []*Patient{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [6]bool{
-			pq.withFrompatient != nil,
-			pq.withPatientCoveredPerson != nil,
-			pq.withPatientDiagnose != nil,
+		loadedTypes = [7]bool{
 			pq.withGender != nil,
 			pq.withPrefix != nil,
 			pq.withBloodtype != nil,
+			pq.withFrompatient != nil,
+			pq.withPatientCoveredPerson != nil,
+			pq.withPatientDiagnose != nil,
+			pq.withPatientPrescription != nil,
 		}
 	)
 	if pq.withGender != nil || pq.withPrefix != nil || pq.withBloodtype != nil {
@@ -524,6 +556,81 @@ func (pq *PatientQuery) sqlAll(ctx context.Context) ([]*Patient, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := pq.withGender; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Patient)
+		for i := range nodes {
+			if fk := nodes[i].gender_id; fk != nil {
+				ids = append(ids, *fk)
+				nodeids[*fk] = append(nodeids[*fk], nodes[i])
+			}
+		}
+		query.Where(gender.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "gender_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Gender = n
+			}
+		}
+	}
+
+	if query := pq.withPrefix; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Patient)
+		for i := range nodes {
+			if fk := nodes[i].prefix_id; fk != nil {
+				ids = append(ids, *fk)
+				nodeids[*fk] = append(nodeids[*fk], nodes[i])
+			}
+		}
+		query.Where(prefix.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "prefix_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Prefix = n
+			}
+		}
+	}
+
+	if query := pq.withBloodtype; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Patient)
+		for i := range nodes {
+			if fk := nodes[i].bloodtype_id; fk != nil {
+				ids = append(ids, *fk)
+				nodeids[*fk] = append(nodeids[*fk], nodes[i])
+			}
+		}
+		query.Where(bloodtype.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "bloodtype_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Bloodtype = n
+			}
+		}
 	}
 
 	if query := pq.withFrompatient; query != nil {
@@ -610,78 +717,31 @@ func (pq *PatientQuery) sqlAll(ctx context.Context) ([]*Patient, error) {
 		}
 	}
 
-	if query := pq.withGender; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Patient)
+	if query := pq.withPatientPrescription; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Patient)
 		for i := range nodes {
-			if fk := nodes[i].gender_id; fk != nil {
-				ids = append(ids, *fk)
-				nodeids[*fk] = append(nodeids[*fk], nodes[i])
-			}
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
 		}
-		query.Where(gender.IDIn(ids...))
+		query.withFKs = true
+		query.Where(predicate.Prescription(func(s *sql.Selector) {
+			s.Where(sql.InValues(patient.PatientPrescriptionColumn, fks...))
+		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
+			fk := n.patient_id
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "patient_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "gender_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "patient_id" returned %v for node %v`, *fk, n.ID)
 			}
-			for i := range nodes {
-				nodes[i].Edges.Gender = n
-			}
-		}
-	}
-
-	if query := pq.withPrefix; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Patient)
-		for i := range nodes {
-			if fk := nodes[i].prefix_id; fk != nil {
-				ids = append(ids, *fk)
-				nodeids[*fk] = append(nodeids[*fk], nodes[i])
-			}
-		}
-		query.Where(prefix.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "prefix_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Prefix = n
-			}
-		}
-	}
-
-	if query := pq.withBloodtype; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Patient)
-		for i := range nodes {
-			if fk := nodes[i].bloodtype_id; fk != nil {
-				ids = append(ids, *fk)
-				nodeids[*fk] = append(nodeids[*fk], nodes[i])
-			}
-		}
-		query.Where(bloodtype.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "bloodtype_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Bloodtype = n
-			}
+			node.Edges.PatientPrescription = append(node.Edges.PatientPrescription, n)
 		}
 	}
 

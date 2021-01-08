@@ -1,4 +1,4 @@
-import React, { FC ,useEffect} from 'react';
+import React, { FC, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,7 +9,7 @@ import Container from '@material-ui/core/Container';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import { DefaultApi } from '../../api/apis'; // Api Gennerate From Command
-import { EntNurse } from '../../api/models'; // import interface User
+import { EntNurse, EntDoctor, EntMedical } from '../../api/models'; // import interface User
 import Swal from 'sweetalert2'; // alert
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -33,20 +33,32 @@ const useStyles = makeStyles(theme => ({
 
 
 const Login: FC<{}> = () => {
-  
-  
+
+
   const classes = useStyles();
   const api = new DefaultApi();
 
   const [nurses, SetNurses] = React.useState<EntNurse[]>([]);
+  const [doctors, SetDoctors] = React.useState<EntDoctor[]>([]);
+  const [medicals, SetMedicals] = React.useState<EntMedical[]>([]);
 
   const getNurse = async () => {
-    const res = await api.listNurse({ limit: 10, offset: 0});
+    const res = await api.listNurse({ limit: 10, offset: 0 });
     SetNurses(res);
     console.log(res)
   }
-  
- 
+  const getDoctor = async () => {
+    const res = await api.listDoctor({ limit: 10, offset: 0 });
+    SetDoctors(res);
+    console.log(res)
+  }
+  const getMedicals = async () => {
+    const res = await api.listMedical({ limit: 10, offset: 0 });
+    SetMedicals(res);
+    console.log(res)
+  }
+
+
 
   const EmailhandleChange = (event: any) => {
     setEmail(event.target.value as string);
@@ -61,6 +73,8 @@ const Login: FC<{}> = () => {
 
   useEffect(() => {
     getNurse();
+    getDoctor();
+    getMedicals();
   }, []);
 
   var status = false
@@ -75,29 +89,38 @@ const Login: FC<{}> = () => {
       toast.addEventListener('mouseleave', Swal.resumeTimer);
     },
   });
-  function login(){
-    console.log(email,password)
+  function login() {
+    console.log(email, password)
     nurses.filter(item => item.nurseEmail === email).map(item2 => {
-      if(status == false){
-        if(item2.nursePassword == password){
-          window.location.href = "http://localhost:3000/NurseSystem";
+      if (status == false) {
+        if (item2.nursePassword == password) {
+          window.location.href = "http://localhost:3000/homenurse";
           status = true
         }
-        else{
-          console.log('fail')
-          Toast.fire({
-            icon: 'error',
-            title: 'username หรือ password ไม่ถูกต้อง',
-          });
+      }
+    })
+    doctors.filter(item => item.doctorEmail === email).map(item2 => {
+      if (status == false) {
+        if (item2.doctorPassword == password) {
+          window.location.href = "http://localhost:3000/homedoctor";
+          status = true
         }
       }
-      
     })
+    medicals.filter(item => item.medicalEmail === email).map(item2 => {
+      if (status == false) {
+        if (item2.medicalPassword == password) {
+          window.location.href = "http://localhost:3000/homemedical";
+          status = true
+        }
+      }
+    })
+    Toast.fire({
+      icon: 'error',
+      title: 'username หรือ password ไม่ถูกต้อง',
+    });
     status = false
   };
-
-
-
 
 
   return (
@@ -105,49 +128,49 @@ const Login: FC<{}> = () => {
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
-        <AccountCircleIcon aria-controls="fade-menu" aria-haspopup="true"  fontSize="large" />
-      	<LocalHospitalIcon aria-controls="fade-menu" aria-haspopup="true"  fontSize="large" />
+          <AccountCircleIcon aria-controls="fade-menu" aria-haspopup="true" fontSize="large" />
+          <LocalHospitalIcon aria-controls="fade-menu" aria-haspopup="true" fontSize="large" />
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            value={email}
-            onChange={EmailhandleChange}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            value={password}
-            onChange={PasswordhandleChange}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={login }
-            
-            
-          >
-            Sign In
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          value={email}
+          onChange={EmailhandleChange}
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          value={password}
+          onChange={PasswordhandleChange}
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          onClick={login}
+
+
+        >
+          Sign In
           </Button>
 
       </div>
-      
+
     </Container>
   );
 };

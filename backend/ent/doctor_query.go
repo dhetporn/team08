@@ -12,6 +12,7 @@ import (
 	"github.com/dhetporn/team08/ent/diagnose"
 	"github.com/dhetporn/team08/ent/doctor"
 	"github.com/dhetporn/team08/ent/predicate"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
@@ -26,7 +27,8 @@ type DoctorQuery struct {
 	unique     []string
 	predicates []predicate.Doctor
 	// eager-loading edges.
-	withDoctorDiagnose *DiagnoseQuery
+	withDoctorDiagnose     *DiagnoseQuery
+	withDoctorPrescription *PrescriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -67,6 +69,24 @@ func (dq *DoctorQuery) QueryDoctorDiagnose() *DiagnoseQuery {
 			sqlgraph.From(doctor.Table, doctor.FieldID, dq.sqlQuery()),
 			sqlgraph.To(diagnose.Table, diagnose.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, doctor.DoctorDiagnoseTable, doctor.DoctorDiagnoseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDoctorPrescription chains the current query on the doctor_prescription edge.
+func (dq *DoctorQuery) QueryDoctorPrescription() *PrescriptionQuery {
+	query := &PrescriptionQuery{config: dq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := dq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(doctor.Table, doctor.FieldID, dq.sqlQuery()),
+			sqlgraph.To(prescription.Table, prescription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, doctor.DoctorPrescriptionTable, doctor.DoctorPrescriptionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dq.driver.Dialect(), step)
 		return fromU, nil
@@ -264,6 +284,17 @@ func (dq *DoctorQuery) WithDoctorDiagnose(opts ...func(*DiagnoseQuery)) *DoctorQ
 	return dq
 }
 
+//  WithDoctorPrescription tells the query-builder to eager-loads the nodes that are connected to
+// the "doctor_prescription" edge. The optional arguments used to configure the query builder of the edge.
+func (dq *DoctorQuery) WithDoctorPrescription(opts ...func(*PrescriptionQuery)) *DoctorQuery {
+	query := &PrescriptionQuery{config: dq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	dq.withDoctorPrescription = query
+	return dq
+}
+
 // GroupBy used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -330,8 +361,9 @@ func (dq *DoctorQuery) sqlAll(ctx context.Context) ([]*Doctor, error) {
 	var (
 		nodes       = []*Doctor{}
 		_spec       = dq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			dq.withDoctorDiagnose != nil,
+			dq.withDoctorPrescription != nil,
 		}
 	)
 	_spec.ScanValues = func() []interface{} {
@@ -380,6 +412,34 @@ func (dq *DoctorQuery) sqlAll(ctx context.Context) ([]*Doctor, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "doctor_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.DoctorDiagnose = append(node.Edges.DoctorDiagnose, n)
+		}
+	}
+
+	if query := dq.withDoctorPrescription; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*Doctor)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.withFKs = true
+		query.Where(predicate.Prescription(func(s *sql.Selector) {
+			s.Where(sql.InValues(doctor.DoctorPrescriptionColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.doctor_id
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "doctor_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "doctor_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.DoctorPrescription = append(node.Edges.DoctorPrescription, n)
 		}
 	}
 

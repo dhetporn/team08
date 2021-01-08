@@ -18,6 +18,10 @@ import {
     EntDiagnoseFromJSON,
     EntDiagnoseFromJSONTyped,
     EntDiagnoseToJSON,
+    EntPrescription,
+    EntPrescriptionFromJSON,
+    EntPrescriptionFromJSONTyped,
+    EntPrescriptionToJSON,
 } from './';
 
 /**
@@ -32,6 +36,12 @@ export interface EntDoctorEdges {
      * @memberof EntDoctorEdges
      */
     doctorDiagnose?: Array<EntDiagnose>;
+    /**
+     * DoctorPrescription holds the value of the doctor_prescription edge.
+     * @type {Array<EntPrescription>}
+     * @memberof EntDoctorEdges
+     */
+    doctorPrescription?: Array<EntPrescription>;
 }
 
 export function EntDoctorEdgesFromJSON(json: any): EntDoctorEdges {
@@ -45,6 +55,7 @@ export function EntDoctorEdgesFromJSONTyped(json: any, ignoreDiscriminator: bool
     return {
         
         'doctorDiagnose': !exists(json, 'doctorDiagnose') ? undefined : ((json['doctorDiagnose'] as Array<any>).map(EntDiagnoseFromJSON)),
+        'doctorPrescription': !exists(json, 'doctorPrescription') ? undefined : ((json['doctorPrescription'] as Array<any>).map(EntPrescriptionFromJSON)),
     };
 }
 
@@ -58,6 +69,7 @@ export function EntDoctorEdgesToJSON(value?: EntDoctorEdges | null): any {
     return {
         
         'doctorDiagnose': value.doctorDiagnose === undefined ? undefined : ((value.doctorDiagnose as Array<any>).map(EntDiagnoseToJSON)),
+        'doctorPrescription': value.doctorPrescription === undefined ? undefined : ((value.doctorPrescription as Array<any>).map(EntPrescriptionToJSON)),
     };
 }
 

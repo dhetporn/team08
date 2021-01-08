@@ -18,6 +18,8 @@ const (
 
 	// EdgeFromnurse holds the string denoting the fromnurse edge name in mutations.
 	EdgeFromnurse = "fromnurse"
+	// EdgeNursePrescription holds the string denoting the nurse_prescription edge name in mutations.
+	EdgeNursePrescription = "nurse_prescription"
 
 	// Table holds the table name of the nurse in the database.
 	Table = "nurses"
@@ -28,6 +30,13 @@ const (
 	FromnurseInverseTable = "rents"
 	// FromnurseColumn is the table column denoting the fromnurse relation/edge.
 	FromnurseColumn = "nurse_id"
+	// NursePrescriptionTable is the table the holds the nurse_prescription relation/edge.
+	NursePrescriptionTable = "prescriptions"
+	// NursePrescriptionInverseTable is the table name for the Prescription entity.
+	// It exists in this package in order to avoid circular dependency with the "prescription" package.
+	NursePrescriptionInverseTable = "prescriptions"
+	// NursePrescriptionColumn is the table column denoting the nurse_prescription relation/edge.
+	NursePrescriptionColumn = "nurse_id"
 )
 
 // Columns holds all SQL columns for nurse fields.

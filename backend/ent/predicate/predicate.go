@@ -27,6 +27,9 @@ type Disease func(*sql.Selector)
 // Doctor is the predicate function for doctor builders.
 type Doctor func(*sql.Selector)
 
+// Drug is the predicate function for drug builders.
+type Drug func(*sql.Selector)
+
 // Fund is the predicate function for fund builders.
 type Fund func(*sql.Selector)
 
@@ -44,6 +47,9 @@ type Patient func(*sql.Selector)
 
 // Prefix is the predicate function for prefix builders.
 type Prefix func(*sql.Selector)
+
+// Prescription is the predicate function for prescription builders.
+type Prescription func(*sql.Selector)
 
 // Rent is the predicate function for rent builders.
 type Rent func(*sql.Selector)

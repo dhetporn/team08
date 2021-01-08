@@ -31,12 +31,14 @@ type hooks struct {
 	Diagnose      []ent.Hook
 	Disease       []ent.Hook
 	Doctor        []ent.Hook
+	Drug          []ent.Hook
 	Fund          []ent.Hook
 	Gender        []ent.Hook
 	Medical       []ent.Hook
 	Nurse         []ent.Hook
 	Patient       []ent.Hook
 	Prefix        []ent.Hook
+	Prescription  []ent.Hook
 	Rent          []ent.Hook
 	Room          []ent.Hook
 	Roomtype      []ent.Hook

@@ -34,6 +34,10 @@ import {
     EntPrefixFromJSON,
     EntPrefixFromJSONTyped,
     EntPrefixToJSON,
+    EntPrescription,
+    EntPrescriptionFromJSON,
+    EntPrescriptionFromJSONTyped,
+    EntPrescriptionToJSON,
     EntRent,
     EntRentFromJSON,
     EntRentFromJSONTyped,
@@ -77,6 +81,12 @@ export interface EntPatientEdges {
      */
     patientDiagnose?: Array<EntDiagnose>;
     /**
+     * PatientPrescription holds the value of the patient_prescription edge.
+     * @type {Array<EntPrescription>}
+     * @memberof EntPatientEdges
+     */
+    patientPrescription?: Array<EntPrescription>;
+    /**
      * 
      * @type {EntPrefix}
      * @memberof EntPatientEdges
@@ -99,6 +109,7 @@ export function EntPatientEdgesFromJSONTyped(json: any, ignoreDiscriminator: boo
         'gender': !exists(json, 'gender') ? undefined : EntGenderFromJSON(json['gender']),
         'patientCoveredPerson': !exists(json, 'patientCoveredPerson') ? undefined : ((json['patientCoveredPerson'] as Array<any>).map(EntCoveredPersonFromJSON)),
         'patientDiagnose': !exists(json, 'patientDiagnose') ? undefined : ((json['patientDiagnose'] as Array<any>).map(EntDiagnoseFromJSON)),
+        'patientPrescription': !exists(json, 'patientPrescription') ? undefined : ((json['patientPrescription'] as Array<any>).map(EntPrescriptionFromJSON)),
         'prefix': !exists(json, 'prefix') ? undefined : EntPrefixFromJSON(json['prefix']),
     };
 }
@@ -117,6 +128,7 @@ export function EntPatientEdgesToJSON(value?: EntPatientEdges | null): any {
         'gender': EntGenderToJSON(value.gender),
         'patientCoveredPerson': value.patientCoveredPerson === undefined ? undefined : ((value.patientCoveredPerson as Array<any>).map(EntCoveredPersonToJSON)),
         'patientDiagnose': value.patientDiagnose === undefined ? undefined : ((value.patientDiagnose as Array<any>).map(EntDiagnoseToJSON)),
+        'patientPrescription': value.patientPrescription === undefined ? undefined : ((value.patientPrescription as Array<any>).map(EntPrescriptionToJSON)),
         'prefix': EntPrefixToJSON(value.prefix),
     };
 }

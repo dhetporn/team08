@@ -37,59 +37,29 @@ type Patient struct {
 
 // PatientEdges holds the relations/edges for other nodes in the graph.
 type PatientEdges struct {
-	// Frompatient holds the value of the frompatient edge.
-	Frompatient *Rent
-	// PatientCoveredPerson holds the value of the Patient_CoveredPerson edge.
-	PatientCoveredPerson []*CoveredPerson
-	// PatientDiagnose holds the value of the patient_diagnose edge.
-	PatientDiagnose []*Diagnose
 	// Gender holds the value of the gender edge.
 	Gender *Gender
 	// Prefix holds the value of the prefix edge.
 	Prefix *Prefix
 	// Bloodtype holds the value of the bloodtype edge.
 	Bloodtype *Bloodtype
+	// Frompatient holds the value of the frompatient edge.
+	Frompatient *Rent
+	// PatientCoveredPerson holds the value of the Patient_CoveredPerson edge.
+	PatientCoveredPerson []*CoveredPerson
+	// PatientDiagnose holds the value of the patient_diagnose edge.
+	PatientDiagnose []*Diagnose
+	// PatientPrescription holds the value of the patient_prescription edge.
+	PatientPrescription []*Prescription
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
-}
-
-// FrompatientOrErr returns the Frompatient value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PatientEdges) FrompatientOrErr() (*Rent, error) {
-	if e.loadedTypes[0] {
-		if e.Frompatient == nil {
-			// The edge frompatient was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: rent.Label}
-		}
-		return e.Frompatient, nil
-	}
-	return nil, &NotLoadedError{edge: "frompatient"}
-}
-
-// PatientCoveredPersonOrErr returns the PatientCoveredPerson value or an error if the edge
-// was not loaded in eager-loading.
-func (e PatientEdges) PatientCoveredPersonOrErr() ([]*CoveredPerson, error) {
-	if e.loadedTypes[1] {
-		return e.PatientCoveredPerson, nil
-	}
-	return nil, &NotLoadedError{edge: "Patient_CoveredPerson"}
-}
-
-// PatientDiagnoseOrErr returns the PatientDiagnose value or an error if the edge
-// was not loaded in eager-loading.
-func (e PatientEdges) PatientDiagnoseOrErr() ([]*Diagnose, error) {
-	if e.loadedTypes[2] {
-		return e.PatientDiagnose, nil
-	}
-	return nil, &NotLoadedError{edge: "patient_diagnose"}
+	loadedTypes [7]bool
 }
 
 // GenderOrErr returns the Gender value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PatientEdges) GenderOrErr() (*Gender, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[0] {
 		if e.Gender == nil {
 			// The edge gender was loaded in eager-loading,
 			// but was not found.
@@ -103,7 +73,7 @@ func (e PatientEdges) GenderOrErr() (*Gender, error) {
 // PrefixOrErr returns the Prefix value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PatientEdges) PrefixOrErr() (*Prefix, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[1] {
 		if e.Prefix == nil {
 			// The edge prefix was loaded in eager-loading,
 			// but was not found.
@@ -117,7 +87,7 @@ func (e PatientEdges) PrefixOrErr() (*Prefix, error) {
 // BloodtypeOrErr returns the Bloodtype value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PatientEdges) BloodtypeOrErr() (*Bloodtype, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[2] {
 		if e.Bloodtype == nil {
 			// The edge bloodtype was loaded in eager-loading,
 			// but was not found.
@@ -126,6 +96,47 @@ func (e PatientEdges) BloodtypeOrErr() (*Bloodtype, error) {
 		return e.Bloodtype, nil
 	}
 	return nil, &NotLoadedError{edge: "bloodtype"}
+}
+
+// FrompatientOrErr returns the Frompatient value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PatientEdges) FrompatientOrErr() (*Rent, error) {
+	if e.loadedTypes[3] {
+		if e.Frompatient == nil {
+			// The edge frompatient was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: rent.Label}
+		}
+		return e.Frompatient, nil
+	}
+	return nil, &NotLoadedError{edge: "frompatient"}
+}
+
+// PatientCoveredPersonOrErr returns the PatientCoveredPerson value or an error if the edge
+// was not loaded in eager-loading.
+func (e PatientEdges) PatientCoveredPersonOrErr() ([]*CoveredPerson, error) {
+	if e.loadedTypes[4] {
+		return e.PatientCoveredPerson, nil
+	}
+	return nil, &NotLoadedError{edge: "Patient_CoveredPerson"}
+}
+
+// PatientDiagnoseOrErr returns the PatientDiagnose value or an error if the edge
+// was not loaded in eager-loading.
+func (e PatientEdges) PatientDiagnoseOrErr() ([]*Diagnose, error) {
+	if e.loadedTypes[5] {
+		return e.PatientDiagnose, nil
+	}
+	return nil, &NotLoadedError{edge: "patient_diagnose"}
+}
+
+// PatientPrescriptionOrErr returns the PatientPrescription value or an error if the edge
+// was not loaded in eager-loading.
+func (e PatientEdges) PatientPrescriptionOrErr() ([]*Prescription, error) {
+	if e.loadedTypes[6] {
+		return e.PatientPrescription, nil
+	}
+	return nil, &NotLoadedError{edge: "patient_prescription"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -204,6 +215,21 @@ func (pa *Patient) assignValues(values ...interface{}) error {
 	return nil
 }
 
+// QueryGender queries the gender edge of the Patient.
+func (pa *Patient) QueryGender() *GenderQuery {
+	return (&PatientClient{config: pa.config}).QueryGender(pa)
+}
+
+// QueryPrefix queries the prefix edge of the Patient.
+func (pa *Patient) QueryPrefix() *PrefixQuery {
+	return (&PatientClient{config: pa.config}).QueryPrefix(pa)
+}
+
+// QueryBloodtype queries the bloodtype edge of the Patient.
+func (pa *Patient) QueryBloodtype() *BloodtypeQuery {
+	return (&PatientClient{config: pa.config}).QueryBloodtype(pa)
+}
+
 // QueryFrompatient queries the frompatient edge of the Patient.
 func (pa *Patient) QueryFrompatient() *RentQuery {
 	return (&PatientClient{config: pa.config}).QueryFrompatient(pa)
@@ -219,19 +245,9 @@ func (pa *Patient) QueryPatientDiagnose() *DiagnoseQuery {
 	return (&PatientClient{config: pa.config}).QueryPatientDiagnose(pa)
 }
 
-// QueryGender queries the gender edge of the Patient.
-func (pa *Patient) QueryGender() *GenderQuery {
-	return (&PatientClient{config: pa.config}).QueryGender(pa)
-}
-
-// QueryPrefix queries the prefix edge of the Patient.
-func (pa *Patient) QueryPrefix() *PrefixQuery {
-	return (&PatientClient{config: pa.config}).QueryPrefix(pa)
-}
-
-// QueryBloodtype queries the bloodtype edge of the Patient.
-func (pa *Patient) QueryBloodtype() *BloodtypeQuery {
-	return (&PatientClient{config: pa.config}).QueryBloodtype(pa)
+// QueryPatientPrescription queries the patient_prescription edge of the Patient.
+func (pa *Patient) QueryPatientPrescription() *PrescriptionQuery {
+	return (&PatientClient{config: pa.config}).QueryPatientPrescription(pa)
 }
 
 // Update returns a builder for updating this Patient.

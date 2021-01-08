@@ -24,6 +24,7 @@ func (Nurse) Fields() []ent.Field {
 // Edges of the Nurse.
 func (Nurse) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("fromnurse",  Rent.Type).StorageKey(edge.Column("nurse_id")),
+		edge.To("fromnurse", Rent.Type).StorageKey(edge.Column("nurse_id")),
+		edge.To("nurse_prescription", Prescription.Type).StorageKey(edge.Column("nurse_id")),
 	}
 }

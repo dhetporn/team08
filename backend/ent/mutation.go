@@ -15,12 +15,14 @@ import (
 	"github.com/dhetporn/team08/ent/diagnose"
 	"github.com/dhetporn/team08/ent/disease"
 	"github.com/dhetporn/team08/ent/doctor"
+	"github.com/dhetporn/team08/ent/drug"
 	"github.com/dhetporn/team08/ent/fund"
 	"github.com/dhetporn/team08/ent/gender"
 	"github.com/dhetporn/team08/ent/medical"
 	"github.com/dhetporn/team08/ent/nurse"
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/prefix"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
 	"github.com/dhetporn/team08/ent/room"
 	"github.com/dhetporn/team08/ent/roomtype"
@@ -45,12 +47,14 @@ const (
 	TypeDiagnose      = "Diagnose"
 	TypeDisease       = "Disease"
 	TypeDoctor        = "Doctor"
+	TypeDrug          = "Drug"
 	TypeFund          = "Fund"
 	TypeGender        = "Gender"
 	TypeMedical       = "Medical"
 	TypeNurse         = "Nurse"
 	TypePatient       = "Patient"
 	TypePrefix        = "Prefix"
+	TypePrescription  = "Prescription"
 	TypeRent          = "Rent"
 	TypeRoom          = "Room"
 	TypeRoomtype      = "Roomtype"
@@ -2485,18 +2489,20 @@ func (m *DiseaseMutation) ResetEdge(name string) error {
 // nodes in the graph.
 type DoctorMutation struct {
 	config
-	op                     Op
-	typ                    string
-	id                     *int
-	_Doctor_Name           *string
-	_Doctor_Password       *string
-	_Doctor_Email          *string
-	_Doctor_tel            *string
-	clearedFields          map[string]struct{}
-	doctor_diagnose        map[int]struct{}
-	removeddoctor_diagnose map[int]struct{}
-	done                   bool
-	oldValue               func(context.Context) (*Doctor, error)
+	op                         Op
+	typ                        string
+	id                         *int
+	_Doctor_Name               *string
+	_Doctor_Password           *string
+	_Doctor_Email              *string
+	_Doctor_tel                *string
+	clearedFields              map[string]struct{}
+	doctor_diagnose            map[int]struct{}
+	removeddoctor_diagnose     map[int]struct{}
+	doctor_prescription        map[int]struct{}
+	removeddoctor_prescription map[int]struct{}
+	done                       bool
+	oldValue                   func(context.Context) (*Doctor, error)
 }
 
 var _ ent.Mutation = (*DoctorMutation)(nil)
@@ -2768,6 +2774,48 @@ func (m *DoctorMutation) ResetDoctorDiagnose() {
 	m.removeddoctor_diagnose = nil
 }
 
+// AddDoctorPrescriptionIDs adds the doctor_prescription edge to Prescription by ids.
+func (m *DoctorMutation) AddDoctorPrescriptionIDs(ids ...int) {
+	if m.doctor_prescription == nil {
+		m.doctor_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.doctor_prescription[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveDoctorPrescriptionIDs removes the doctor_prescription edge to Prescription by ids.
+func (m *DoctorMutation) RemoveDoctorPrescriptionIDs(ids ...int) {
+	if m.removeddoctor_prescription == nil {
+		m.removeddoctor_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removeddoctor_prescription[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDoctorPrescription returns the removed ids of doctor_prescription.
+func (m *DoctorMutation) RemovedDoctorPrescriptionIDs() (ids []int) {
+	for id := range m.removeddoctor_prescription {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DoctorPrescriptionIDs returns the doctor_prescription ids in the mutation.
+func (m *DoctorMutation) DoctorPrescriptionIDs() (ids []int) {
+	for id := range m.doctor_prescription {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDoctorPrescription reset all changes of the "doctor_prescription" edge.
+func (m *DoctorMutation) ResetDoctorPrescription() {
+	m.doctor_prescription = nil
+	m.removeddoctor_prescription = nil
+}
+
 // Op returns the operation name.
 func (m *DoctorMutation) Op() Op {
 	return m.op
@@ -2934,9 +2982,12 @@ func (m *DoctorMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this
 // mutation.
 func (m *DoctorMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.doctor_diagnose != nil {
 		edges = append(edges, doctor.EdgeDoctorDiagnose)
+	}
+	if m.doctor_prescription != nil {
+		edges = append(edges, doctor.EdgeDoctorPrescription)
 	}
 	return edges
 }
@@ -2951,6 +3002,12 @@ func (m *DoctorMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case doctor.EdgeDoctorPrescription:
+		ids := make([]ent.Value, 0, len(m.doctor_prescription))
+		for id := range m.doctor_prescription {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -2958,9 +3015,12 @@ func (m *DoctorMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this
 // mutation.
 func (m *DoctorMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removeddoctor_diagnose != nil {
 		edges = append(edges, doctor.EdgeDoctorDiagnose)
+	}
+	if m.removeddoctor_prescription != nil {
+		edges = append(edges, doctor.EdgeDoctorPrescription)
 	}
 	return edges
 }
@@ -2975,6 +3035,12 @@ func (m *DoctorMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case doctor.EdgeDoctorPrescription:
+		ids := make([]ent.Value, 0, len(m.removeddoctor_prescription))
+		for id := range m.removeddoctor_prescription {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -2982,7 +3048,7 @@ func (m *DoctorMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this
 // mutation.
 func (m *DoctorMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -3010,8 +3076,379 @@ func (m *DoctorMutation) ResetEdge(name string) error {
 	case doctor.EdgeDoctorDiagnose:
 		m.ResetDoctorDiagnose()
 		return nil
+	case doctor.EdgeDoctorPrescription:
+		m.ResetDoctorPrescription()
+		return nil
 	}
 	return fmt.Errorf("unknown Doctor edge %s", name)
+}
+
+// DrugMutation represents an operation that mutate the Drugs
+// nodes in the graph.
+type DrugMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *int
+	_Drug_Name               *string
+	clearedFields            map[string]struct{}
+	drug_prescription        map[int]struct{}
+	removeddrug_prescription map[int]struct{}
+	done                     bool
+	oldValue                 func(context.Context) (*Drug, error)
+}
+
+var _ ent.Mutation = (*DrugMutation)(nil)
+
+// drugOption allows to manage the mutation configuration using functional options.
+type drugOption func(*DrugMutation)
+
+// newDrugMutation creates new mutation for $n.Name.
+func newDrugMutation(c config, op Op, opts ...drugOption) *DrugMutation {
+	m := &DrugMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDrug,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDrugID sets the id field of the mutation.
+func withDrugID(id int) drugOption {
+	return func(m *DrugMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Drug
+		)
+		m.oldValue = func(ctx context.Context) (*Drug, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Drug.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDrug sets the old Drug of the mutation.
+func withDrug(node *Drug) drugOption {
+	return func(m *DrugMutation) {
+		m.oldValue = func(context.Context) (*Drug, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DrugMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DrugMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the id value in the mutation. Note that, the id
+// is available only if it was provided to the builder.
+func (m *DrugMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetDrugName sets the Drug_Name field.
+func (m *DrugMutation) SetDrugName(s string) {
+	m._Drug_Name = &s
+}
+
+// DrugName returns the Drug_Name value in the mutation.
+func (m *DrugMutation) DrugName() (r string, exists bool) {
+	v := m._Drug_Name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDrugName returns the old Drug_Name value of the Drug.
+// If the Drug object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *DrugMutation) OldDrugName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDrugName is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDrugName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDrugName: %w", err)
+	}
+	return oldValue.DrugName, nil
+}
+
+// ResetDrugName reset all changes of the "Drug_Name" field.
+func (m *DrugMutation) ResetDrugName() {
+	m._Drug_Name = nil
+}
+
+// AddDrugPrescriptionIDs adds the drug_prescription edge to Prescription by ids.
+func (m *DrugMutation) AddDrugPrescriptionIDs(ids ...int) {
+	if m.drug_prescription == nil {
+		m.drug_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.drug_prescription[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveDrugPrescriptionIDs removes the drug_prescription edge to Prescription by ids.
+func (m *DrugMutation) RemoveDrugPrescriptionIDs(ids ...int) {
+	if m.removeddrug_prescription == nil {
+		m.removeddrug_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removeddrug_prescription[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDrugPrescription returns the removed ids of drug_prescription.
+func (m *DrugMutation) RemovedDrugPrescriptionIDs() (ids []int) {
+	for id := range m.removeddrug_prescription {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DrugPrescriptionIDs returns the drug_prescription ids in the mutation.
+func (m *DrugMutation) DrugPrescriptionIDs() (ids []int) {
+	for id := range m.drug_prescription {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDrugPrescription reset all changes of the "drug_prescription" edge.
+func (m *DrugMutation) ResetDrugPrescription() {
+	m.drug_prescription = nil
+	m.removeddrug_prescription = nil
+}
+
+// Op returns the operation name.
+func (m *DrugMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Drug).
+func (m *DrugMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during
+// this mutation. Note that, in order to get all numeric
+// fields that were in/decremented, call AddedFields().
+func (m *DrugMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m._Drug_Name != nil {
+		fields = append(fields, drug.FieldDrugName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name.
+// The second boolean value indicates that this field was
+// not set, or was not define in the schema.
+func (m *DrugMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case drug.FieldDrugName:
+		return m.DrugName()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database.
+// An error is returned if the mutation operation is not UpdateOne,
+// or the query to the database was failed.
+func (m *DrugMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case drug.FieldDrugName:
+		return m.OldDrugName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Drug field %s", name)
+}
+
+// SetField sets the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *DrugMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case drug.FieldDrugName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDrugName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Drug field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented
+// or decremented during this mutation.
+func (m *DrugMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was in/decremented
+// from a field with the given name. The second value indicates
+// that this field was not set, or was not define in the schema.
+func (m *DrugMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *DrugMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Drug numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared
+// during this mutation.
+func (m *DrugMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicates if this field was
+// cleared in this mutation.
+func (m *DrugMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value for the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DrugMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Drug nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation regarding the
+// given field name. It returns an error if the field is not
+// defined in the schema.
+func (m *DrugMutation) ResetField(name string) error {
+	switch name {
+	case drug.FieldDrugName:
+		m.ResetDrugName()
+		return nil
+	}
+	return fmt.Errorf("unknown Drug field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this
+// mutation.
+func (m *DrugMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.drug_prescription != nil {
+		edges = append(edges, drug.EdgeDrugPrescription)
+	}
+	return edges
+}
+
+// AddedIDs returns all ids (to other nodes) that were added for
+// the given edge name.
+func (m *DrugMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case drug.EdgeDrugPrescription:
+		ids := make([]ent.Value, 0, len(m.drug_prescription))
+		for id := range m.drug_prescription {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this
+// mutation.
+func (m *DrugMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removeddrug_prescription != nil {
+		edges = append(edges, drug.EdgeDrugPrescription)
+	}
+	return edges
+}
+
+// RemovedIDs returns all ids (to other nodes) that were removed for
+// the given edge name.
+func (m *DrugMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case drug.EdgeDrugPrescription:
+		ids := make([]ent.Value, 0, len(m.removeddrug_prescription))
+		for id := range m.removeddrug_prescription {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this
+// mutation.
+func (m *DrugMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// EdgeCleared returns a boolean indicates if this edge was
+// cleared in this mutation.
+func (m *DrugMutation) EdgeCleared(name string) bool {
+	switch name {
+	}
+	return false
+}
+
+// ClearEdge clears the value for the given name. It returns an
+// error if the edge name is not defined in the schema.
+func (m *DrugMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Drug unique edge %s", name)
+}
+
+// ResetEdge resets all changes in the mutation regarding the
+// given edge name. It returns an error if the edge is not
+// defined in the schema.
+func (m *DrugMutation) ResetEdge(name string) error {
+	switch name {
+	case drug.EdgeDrugPrescription:
+		m.ResetDrugPrescription()
+		return nil
+	}
+	return fmt.Errorf("unknown Drug edge %s", name)
 }
 
 // FundMutation represents an operation that mutate the Funds
@@ -4212,18 +4649,20 @@ func (m *MedicalMutation) ResetEdge(name string) error {
 // nodes in the graph.
 type NurseMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *int
-	nurse_name       *string
-	nurse_email      *string
-	nurse_password   *string
-	nurse_tel        *string
-	clearedFields    map[string]struct{}
-	fromnurse        map[int]struct{}
-	removedfromnurse map[int]struct{}
-	done             bool
-	oldValue         func(context.Context) (*Nurse, error)
+	op                        Op
+	typ                       string
+	id                        *int
+	nurse_name                *string
+	nurse_email               *string
+	nurse_password            *string
+	nurse_tel                 *string
+	clearedFields             map[string]struct{}
+	fromnurse                 map[int]struct{}
+	removedfromnurse          map[int]struct{}
+	nurse_prescription        map[int]struct{}
+	removednurse_prescription map[int]struct{}
+	done                      bool
+	oldValue                  func(context.Context) (*Nurse, error)
 }
 
 var _ ent.Mutation = (*NurseMutation)(nil)
@@ -4495,6 +4934,48 @@ func (m *NurseMutation) ResetFromnurse() {
 	m.removedfromnurse = nil
 }
 
+// AddNursePrescriptionIDs adds the nurse_prescription edge to Prescription by ids.
+func (m *NurseMutation) AddNursePrescriptionIDs(ids ...int) {
+	if m.nurse_prescription == nil {
+		m.nurse_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.nurse_prescription[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveNursePrescriptionIDs removes the nurse_prescription edge to Prescription by ids.
+func (m *NurseMutation) RemoveNursePrescriptionIDs(ids ...int) {
+	if m.removednurse_prescription == nil {
+		m.removednurse_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removednurse_prescription[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNursePrescription returns the removed ids of nurse_prescription.
+func (m *NurseMutation) RemovedNursePrescriptionIDs() (ids []int) {
+	for id := range m.removednurse_prescription {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NursePrescriptionIDs returns the nurse_prescription ids in the mutation.
+func (m *NurseMutation) NursePrescriptionIDs() (ids []int) {
+	for id := range m.nurse_prescription {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNursePrescription reset all changes of the "nurse_prescription" edge.
+func (m *NurseMutation) ResetNursePrescription() {
+	m.nurse_prescription = nil
+	m.removednurse_prescription = nil
+}
+
 // Op returns the operation name.
 func (m *NurseMutation) Op() Op {
 	return m.op
@@ -4661,9 +5142,12 @@ func (m *NurseMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this
 // mutation.
 func (m *NurseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.fromnurse != nil {
 		edges = append(edges, nurse.EdgeFromnurse)
+	}
+	if m.nurse_prescription != nil {
+		edges = append(edges, nurse.EdgeNursePrescription)
 	}
 	return edges
 }
@@ -4678,6 +5162,12 @@ func (m *NurseMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case nurse.EdgeNursePrescription:
+		ids := make([]ent.Value, 0, len(m.nurse_prescription))
+		for id := range m.nurse_prescription {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -4685,9 +5175,12 @@ func (m *NurseMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this
 // mutation.
 func (m *NurseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedfromnurse != nil {
 		edges = append(edges, nurse.EdgeFromnurse)
+	}
+	if m.removednurse_prescription != nil {
+		edges = append(edges, nurse.EdgeNursePrescription)
 	}
 	return edges
 }
@@ -4702,6 +5195,12 @@ func (m *NurseMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case nurse.EdgeNursePrescription:
+		ids := make([]ent.Value, 0, len(m.removednurse_prescription))
+		for id := range m.removednurse_prescription {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -4709,7 +5208,7 @@ func (m *NurseMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this
 // mutation.
 func (m *NurseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -4737,6 +5236,9 @@ func (m *NurseMutation) ResetEdge(name string) error {
 	case nurse.EdgeFromnurse:
 		m.ResetFromnurse()
 		return nil
+	case nurse.EdgeNursePrescription:
+		m.ResetNursePrescription()
+		return nil
 	}
 	return fmt.Errorf("unknown Nurse edge %s", name)
 }
@@ -4756,18 +5258,20 @@ type PatientMutation struct {
 	_Patient_height               *float64
 	add_Patient_height            *float64
 	clearedFields                 map[string]struct{}
-	frompatient                   *int
-	clearedfrompatient            bool
-	_Patient_CoveredPerson        map[int]struct{}
-	removed_Patient_CoveredPerson map[int]struct{}
-	patient_diagnose              map[int]struct{}
-	removedpatient_diagnose       map[int]struct{}
 	gender                        *int
 	clearedgender                 bool
 	prefix                        *int
 	clearedprefix                 bool
 	bloodtype                     *int
 	clearedbloodtype              bool
+	frompatient                   *int
+	clearedfrompatient            bool
+	_Patient_CoveredPerson        map[int]struct{}
+	removed_Patient_CoveredPerson map[int]struct{}
+	patient_diagnose              map[int]struct{}
+	removedpatient_diagnose       map[int]struct{}
+	patient_prescription          map[int]struct{}
+	removedpatient_prescription   map[int]struct{}
 	done                          bool
 	oldValue                      func(context.Context) (*Patient, error)
 }
@@ -5059,6 +5563,123 @@ func (m *PatientMutation) ResetPatientHeight() {
 	m.add_Patient_height = nil
 }
 
+// SetGenderID sets the gender edge to Gender by id.
+func (m *PatientMutation) SetGenderID(id int) {
+	m.gender = &id
+}
+
+// ClearGender clears the gender edge to Gender.
+func (m *PatientMutation) ClearGender() {
+	m.clearedgender = true
+}
+
+// GenderCleared returns if the edge gender was cleared.
+func (m *PatientMutation) GenderCleared() bool {
+	return m.clearedgender
+}
+
+// GenderID returns the gender id in the mutation.
+func (m *PatientMutation) GenderID() (id int, exists bool) {
+	if m.gender != nil {
+		return *m.gender, true
+	}
+	return
+}
+
+// GenderIDs returns the gender ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// GenderID instead. It exists only for internal usage by the builders.
+func (m *PatientMutation) GenderIDs() (ids []int) {
+	if id := m.gender; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetGender reset all changes of the "gender" edge.
+func (m *PatientMutation) ResetGender() {
+	m.gender = nil
+	m.clearedgender = false
+}
+
+// SetPrefixID sets the prefix edge to Prefix by id.
+func (m *PatientMutation) SetPrefixID(id int) {
+	m.prefix = &id
+}
+
+// ClearPrefix clears the prefix edge to Prefix.
+func (m *PatientMutation) ClearPrefix() {
+	m.clearedprefix = true
+}
+
+// PrefixCleared returns if the edge prefix was cleared.
+func (m *PatientMutation) PrefixCleared() bool {
+	return m.clearedprefix
+}
+
+// PrefixID returns the prefix id in the mutation.
+func (m *PatientMutation) PrefixID() (id int, exists bool) {
+	if m.prefix != nil {
+		return *m.prefix, true
+	}
+	return
+}
+
+// PrefixIDs returns the prefix ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// PrefixID instead. It exists only for internal usage by the builders.
+func (m *PatientMutation) PrefixIDs() (ids []int) {
+	if id := m.prefix; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPrefix reset all changes of the "prefix" edge.
+func (m *PatientMutation) ResetPrefix() {
+	m.prefix = nil
+	m.clearedprefix = false
+}
+
+// SetBloodtypeID sets the bloodtype edge to Bloodtype by id.
+func (m *PatientMutation) SetBloodtypeID(id int) {
+	m.bloodtype = &id
+}
+
+// ClearBloodtype clears the bloodtype edge to Bloodtype.
+func (m *PatientMutation) ClearBloodtype() {
+	m.clearedbloodtype = true
+}
+
+// BloodtypeCleared returns if the edge bloodtype was cleared.
+func (m *PatientMutation) BloodtypeCleared() bool {
+	return m.clearedbloodtype
+}
+
+// BloodtypeID returns the bloodtype id in the mutation.
+func (m *PatientMutation) BloodtypeID() (id int, exists bool) {
+	if m.bloodtype != nil {
+		return *m.bloodtype, true
+	}
+	return
+}
+
+// BloodtypeIDs returns the bloodtype ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// BloodtypeID instead. It exists only for internal usage by the builders.
+func (m *PatientMutation) BloodtypeIDs() (ids []int) {
+	if id := m.bloodtype; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBloodtype reset all changes of the "bloodtype" edge.
+func (m *PatientMutation) ResetBloodtype() {
+	m.bloodtype = nil
+	m.clearedbloodtype = false
+}
+
 // SetFrompatientID sets the frompatient edge to Rent by id.
 func (m *PatientMutation) SetFrompatientID(id int) {
 	m.frompatient = &id
@@ -5182,121 +5803,46 @@ func (m *PatientMutation) ResetPatientDiagnose() {
 	m.removedpatient_diagnose = nil
 }
 
-// SetGenderID sets the gender edge to Gender by id.
-func (m *PatientMutation) SetGenderID(id int) {
-	m.gender = &id
+// AddPatientPrescriptionIDs adds the patient_prescription edge to Prescription by ids.
+func (m *PatientMutation) AddPatientPrescriptionIDs(ids ...int) {
+	if m.patient_prescription == nil {
+		m.patient_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.patient_prescription[ids[i]] = struct{}{}
+	}
 }
 
-// ClearGender clears the gender edge to Gender.
-func (m *PatientMutation) ClearGender() {
-	m.clearedgender = true
+// RemovePatientPrescriptionIDs removes the patient_prescription edge to Prescription by ids.
+func (m *PatientMutation) RemovePatientPrescriptionIDs(ids ...int) {
+	if m.removedpatient_prescription == nil {
+		m.removedpatient_prescription = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removedpatient_prescription[ids[i]] = struct{}{}
+	}
 }
 
-// GenderCleared returns if the edge gender was cleared.
-func (m *PatientMutation) GenderCleared() bool {
-	return m.clearedgender
-}
-
-// GenderID returns the gender id in the mutation.
-func (m *PatientMutation) GenderID() (id int, exists bool) {
-	if m.gender != nil {
-		return *m.gender, true
+// RemovedPatientPrescription returns the removed ids of patient_prescription.
+func (m *PatientMutation) RemovedPatientPrescriptionIDs() (ids []int) {
+	for id := range m.removedpatient_prescription {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// GenderIDs returns the gender ids in the mutation.
-// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
-// GenderID instead. It exists only for internal usage by the builders.
-func (m *PatientMutation) GenderIDs() (ids []int) {
-	if id := m.gender; id != nil {
-		ids = append(ids, *id)
+// PatientPrescriptionIDs returns the patient_prescription ids in the mutation.
+func (m *PatientMutation) PatientPrescriptionIDs() (ids []int) {
+	for id := range m.patient_prescription {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetGender reset all changes of the "gender" edge.
-func (m *PatientMutation) ResetGender() {
-	m.gender = nil
-	m.clearedgender = false
-}
-
-// SetPrefixID sets the prefix edge to Prefix by id.
-func (m *PatientMutation) SetPrefixID(id int) {
-	m.prefix = &id
-}
-
-// ClearPrefix clears the prefix edge to Prefix.
-func (m *PatientMutation) ClearPrefix() {
-	m.clearedprefix = true
-}
-
-// PrefixCleared returns if the edge prefix was cleared.
-func (m *PatientMutation) PrefixCleared() bool {
-	return m.clearedprefix
-}
-
-// PrefixID returns the prefix id in the mutation.
-func (m *PatientMutation) PrefixID() (id int, exists bool) {
-	if m.prefix != nil {
-		return *m.prefix, true
-	}
-	return
-}
-
-// PrefixIDs returns the prefix ids in the mutation.
-// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
-// PrefixID instead. It exists only for internal usage by the builders.
-func (m *PatientMutation) PrefixIDs() (ids []int) {
-	if id := m.prefix; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetPrefix reset all changes of the "prefix" edge.
-func (m *PatientMutation) ResetPrefix() {
-	m.prefix = nil
-	m.clearedprefix = false
-}
-
-// SetBloodtypeID sets the bloodtype edge to Bloodtype by id.
-func (m *PatientMutation) SetBloodtypeID(id int) {
-	m.bloodtype = &id
-}
-
-// ClearBloodtype clears the bloodtype edge to Bloodtype.
-func (m *PatientMutation) ClearBloodtype() {
-	m.clearedbloodtype = true
-}
-
-// BloodtypeCleared returns if the edge bloodtype was cleared.
-func (m *PatientMutation) BloodtypeCleared() bool {
-	return m.clearedbloodtype
-}
-
-// BloodtypeID returns the bloodtype id in the mutation.
-func (m *PatientMutation) BloodtypeID() (id int, exists bool) {
-	if m.bloodtype != nil {
-		return *m.bloodtype, true
-	}
-	return
-}
-
-// BloodtypeIDs returns the bloodtype ids in the mutation.
-// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
-// BloodtypeID instead. It exists only for internal usage by the builders.
-func (m *PatientMutation) BloodtypeIDs() (ids []int) {
-	if id := m.bloodtype; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetBloodtype reset all changes of the "bloodtype" edge.
-func (m *PatientMutation) ResetBloodtype() {
-	m.bloodtype = nil
-	m.clearedbloodtype = false
+// ResetPatientPrescription reset all changes of the "patient_prescription" edge.
+func (m *PatientMutation) ResetPatientPrescription() {
+	m.patient_prescription = nil
+	m.removedpatient_prescription = nil
 }
 
 // Op returns the operation name.
@@ -5504,16 +6050,7 @@ func (m *PatientMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this
 // mutation.
 func (m *PatientMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
-	if m.frompatient != nil {
-		edges = append(edges, patient.EdgeFrompatient)
-	}
-	if m._Patient_CoveredPerson != nil {
-		edges = append(edges, patient.EdgePatientCoveredPerson)
-	}
-	if m.patient_diagnose != nil {
-		edges = append(edges, patient.EdgePatientDiagnose)
-	}
+	edges := make([]string, 0, 7)
 	if m.gender != nil {
 		edges = append(edges, patient.EdgeGender)
 	}
@@ -5523,6 +6060,18 @@ func (m *PatientMutation) AddedEdges() []string {
 	if m.bloodtype != nil {
 		edges = append(edges, patient.EdgeBloodtype)
 	}
+	if m.frompatient != nil {
+		edges = append(edges, patient.EdgeFrompatient)
+	}
+	if m._Patient_CoveredPerson != nil {
+		edges = append(edges, patient.EdgePatientCoveredPerson)
+	}
+	if m.patient_diagnose != nil {
+		edges = append(edges, patient.EdgePatientDiagnose)
+	}
+	if m.patient_prescription != nil {
+		edges = append(edges, patient.EdgePatientPrescription)
+	}
 	return edges
 }
 
@@ -5530,6 +6079,18 @@ func (m *PatientMutation) AddedEdges() []string {
 // the given edge name.
 func (m *PatientMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case patient.EdgeGender:
+		if id := m.gender; id != nil {
+			return []ent.Value{*id}
+		}
+	case patient.EdgePrefix:
+		if id := m.prefix; id != nil {
+			return []ent.Value{*id}
+		}
+	case patient.EdgeBloodtype:
+		if id := m.bloodtype; id != nil {
+			return []ent.Value{*id}
+		}
 	case patient.EdgeFrompatient:
 		if id := m.frompatient; id != nil {
 			return []ent.Value{*id}
@@ -5546,18 +6107,12 @@ func (m *PatientMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case patient.EdgeGender:
-		if id := m.gender; id != nil {
-			return []ent.Value{*id}
+	case patient.EdgePatientPrescription:
+		ids := make([]ent.Value, 0, len(m.patient_prescription))
+		for id := range m.patient_prescription {
+			ids = append(ids, id)
 		}
-	case patient.EdgePrefix:
-		if id := m.prefix; id != nil {
-			return []ent.Value{*id}
-		}
-	case patient.EdgeBloodtype:
-		if id := m.bloodtype; id != nil {
-			return []ent.Value{*id}
-		}
+		return ids
 	}
 	return nil
 }
@@ -5565,12 +6120,15 @@ func (m *PatientMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this
 // mutation.
 func (m *PatientMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removed_Patient_CoveredPerson != nil {
 		edges = append(edges, patient.EdgePatientCoveredPerson)
 	}
 	if m.removedpatient_diagnose != nil {
 		edges = append(edges, patient.EdgePatientDiagnose)
+	}
+	if m.removedpatient_prescription != nil {
+		edges = append(edges, patient.EdgePatientPrescription)
 	}
 	return edges
 }
@@ -5591,6 +6149,12 @@ func (m *PatientMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case patient.EdgePatientPrescription:
+		ids := make([]ent.Value, 0, len(m.removedpatient_prescription))
+		for id := range m.removedpatient_prescription {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -5598,10 +6162,7 @@ func (m *PatientMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this
 // mutation.
 func (m *PatientMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
-	if m.clearedfrompatient {
-		edges = append(edges, patient.EdgeFrompatient)
-	}
+	edges := make([]string, 0, 7)
 	if m.clearedgender {
 		edges = append(edges, patient.EdgeGender)
 	}
@@ -5611,6 +6172,9 @@ func (m *PatientMutation) ClearedEdges() []string {
 	if m.clearedbloodtype {
 		edges = append(edges, patient.EdgeBloodtype)
 	}
+	if m.clearedfrompatient {
+		edges = append(edges, patient.EdgeFrompatient)
+	}
 	return edges
 }
 
@@ -5618,14 +6182,14 @@ func (m *PatientMutation) ClearedEdges() []string {
 // cleared in this mutation.
 func (m *PatientMutation) EdgeCleared(name string) bool {
 	switch name {
-	case patient.EdgeFrompatient:
-		return m.clearedfrompatient
 	case patient.EdgeGender:
 		return m.clearedgender
 	case patient.EdgePrefix:
 		return m.clearedprefix
 	case patient.EdgeBloodtype:
 		return m.clearedbloodtype
+	case patient.EdgeFrompatient:
+		return m.clearedfrompatient
 	}
 	return false
 }
@@ -5634,9 +6198,6 @@ func (m *PatientMutation) EdgeCleared(name string) bool {
 // error if the edge name is not defined in the schema.
 func (m *PatientMutation) ClearEdge(name string) error {
 	switch name {
-	case patient.EdgeFrompatient:
-		m.ClearFrompatient()
-		return nil
 	case patient.EdgeGender:
 		m.ClearGender()
 		return nil
@@ -5645,6 +6206,9 @@ func (m *PatientMutation) ClearEdge(name string) error {
 		return nil
 	case patient.EdgeBloodtype:
 		m.ClearBloodtype()
+		return nil
+	case patient.EdgeFrompatient:
+		m.ClearFrompatient()
 		return nil
 	}
 	return fmt.Errorf("unknown Patient unique edge %s", name)
@@ -5655,6 +6219,15 @@ func (m *PatientMutation) ClearEdge(name string) error {
 // defined in the schema.
 func (m *PatientMutation) ResetEdge(name string) error {
 	switch name {
+	case patient.EdgeGender:
+		m.ResetGender()
+		return nil
+	case patient.EdgePrefix:
+		m.ResetPrefix()
+		return nil
+	case patient.EdgeBloodtype:
+		m.ResetBloodtype()
+		return nil
 	case patient.EdgeFrompatient:
 		m.ResetFrompatient()
 		return nil
@@ -5664,14 +6237,8 @@ func (m *PatientMutation) ResetEdge(name string) error {
 	case patient.EdgePatientDiagnose:
 		m.ResetPatientDiagnose()
 		return nil
-	case patient.EdgeGender:
-		m.ResetGender()
-		return nil
-	case patient.EdgePrefix:
-		m.ResetPrefix()
-		return nil
-	case patient.EdgeBloodtype:
-		m.ResetBloodtype()
+	case patient.EdgePatientPrescription:
+		m.ResetPatientPrescription()
 		return nil
 	}
 	return fmt.Errorf("unknown Patient edge %s", name)
@@ -6043,6 +6610,600 @@ func (m *PrefixMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Prefix edge %s", name)
+}
+
+// PrescriptionMutation represents an operation that mutate the Prescriptions
+// nodes in the graph.
+type PrescriptionMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int
+	_Prescrip_Note     *string
+	_Prescrip_DateTime *time.Time
+	clearedFields      map[string]struct{}
+	doctor             *int
+	cleareddoctor      bool
+	patient            *int
+	clearedpatient     bool
+	nurse              *int
+	clearednurse       bool
+	drug               *int
+	cleareddrug        bool
+	done               bool
+	oldValue           func(context.Context) (*Prescription, error)
+}
+
+var _ ent.Mutation = (*PrescriptionMutation)(nil)
+
+// prescriptionOption allows to manage the mutation configuration using functional options.
+type prescriptionOption func(*PrescriptionMutation)
+
+// newPrescriptionMutation creates new mutation for $n.Name.
+func newPrescriptionMutation(c config, op Op, opts ...prescriptionOption) *PrescriptionMutation {
+	m := &PrescriptionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePrescription,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPrescriptionID sets the id field of the mutation.
+func withPrescriptionID(id int) prescriptionOption {
+	return func(m *PrescriptionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Prescription
+		)
+		m.oldValue = func(ctx context.Context) (*Prescription, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Prescription.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPrescription sets the old Prescription of the mutation.
+func withPrescription(node *Prescription) prescriptionOption {
+	return func(m *PrescriptionMutation) {
+		m.oldValue = func(context.Context) (*Prescription, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PrescriptionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PrescriptionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the id value in the mutation. Note that, the id
+// is available only if it was provided to the builder.
+func (m *PrescriptionMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetPrescripNote sets the Prescrip_Note field.
+func (m *PrescriptionMutation) SetPrescripNote(s string) {
+	m._Prescrip_Note = &s
+}
+
+// PrescripNote returns the Prescrip_Note value in the mutation.
+func (m *PrescriptionMutation) PrescripNote() (r string, exists bool) {
+	v := m._Prescrip_Note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrescripNote returns the old Prescrip_Note value of the Prescription.
+// If the Prescription object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *PrescriptionMutation) OldPrescripNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPrescripNote is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPrescripNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrescripNote: %w", err)
+	}
+	return oldValue.PrescripNote, nil
+}
+
+// ResetPrescripNote reset all changes of the "Prescrip_Note" field.
+func (m *PrescriptionMutation) ResetPrescripNote() {
+	m._Prescrip_Note = nil
+}
+
+// SetPrescripDateTime sets the Prescrip_DateTime field.
+func (m *PrescriptionMutation) SetPrescripDateTime(t time.Time) {
+	m._Prescrip_DateTime = &t
+}
+
+// PrescripDateTime returns the Prescrip_DateTime value in the mutation.
+func (m *PrescriptionMutation) PrescripDateTime() (r time.Time, exists bool) {
+	v := m._Prescrip_DateTime
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrescripDateTime returns the old Prescrip_DateTime value of the Prescription.
+// If the Prescription object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *PrescriptionMutation) OldPrescripDateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPrescripDateTime is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPrescripDateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrescripDateTime: %w", err)
+	}
+	return oldValue.PrescripDateTime, nil
+}
+
+// ResetPrescripDateTime reset all changes of the "Prescrip_DateTime" field.
+func (m *PrescriptionMutation) ResetPrescripDateTime() {
+	m._Prescrip_DateTime = nil
+}
+
+// SetDoctorID sets the doctor edge to Doctor by id.
+func (m *PrescriptionMutation) SetDoctorID(id int) {
+	m.doctor = &id
+}
+
+// ClearDoctor clears the doctor edge to Doctor.
+func (m *PrescriptionMutation) ClearDoctor() {
+	m.cleareddoctor = true
+}
+
+// DoctorCleared returns if the edge doctor was cleared.
+func (m *PrescriptionMutation) DoctorCleared() bool {
+	return m.cleareddoctor
+}
+
+// DoctorID returns the doctor id in the mutation.
+func (m *PrescriptionMutation) DoctorID() (id int, exists bool) {
+	if m.doctor != nil {
+		return *m.doctor, true
+	}
+	return
+}
+
+// DoctorIDs returns the doctor ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// DoctorID instead. It exists only for internal usage by the builders.
+func (m *PrescriptionMutation) DoctorIDs() (ids []int) {
+	if id := m.doctor; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDoctor reset all changes of the "doctor" edge.
+func (m *PrescriptionMutation) ResetDoctor() {
+	m.doctor = nil
+	m.cleareddoctor = false
+}
+
+// SetPatientID sets the patient edge to Patient by id.
+func (m *PrescriptionMutation) SetPatientID(id int) {
+	m.patient = &id
+}
+
+// ClearPatient clears the patient edge to Patient.
+func (m *PrescriptionMutation) ClearPatient() {
+	m.clearedpatient = true
+}
+
+// PatientCleared returns if the edge patient was cleared.
+func (m *PrescriptionMutation) PatientCleared() bool {
+	return m.clearedpatient
+}
+
+// PatientID returns the patient id in the mutation.
+func (m *PrescriptionMutation) PatientID() (id int, exists bool) {
+	if m.patient != nil {
+		return *m.patient, true
+	}
+	return
+}
+
+// PatientIDs returns the patient ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// PatientID instead. It exists only for internal usage by the builders.
+func (m *PrescriptionMutation) PatientIDs() (ids []int) {
+	if id := m.patient; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPatient reset all changes of the "patient" edge.
+func (m *PrescriptionMutation) ResetPatient() {
+	m.patient = nil
+	m.clearedpatient = false
+}
+
+// SetNurseID sets the nurse edge to Nurse by id.
+func (m *PrescriptionMutation) SetNurseID(id int) {
+	m.nurse = &id
+}
+
+// ClearNurse clears the nurse edge to Nurse.
+func (m *PrescriptionMutation) ClearNurse() {
+	m.clearednurse = true
+}
+
+// NurseCleared returns if the edge nurse was cleared.
+func (m *PrescriptionMutation) NurseCleared() bool {
+	return m.clearednurse
+}
+
+// NurseID returns the nurse id in the mutation.
+func (m *PrescriptionMutation) NurseID() (id int, exists bool) {
+	if m.nurse != nil {
+		return *m.nurse, true
+	}
+	return
+}
+
+// NurseIDs returns the nurse ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// NurseID instead. It exists only for internal usage by the builders.
+func (m *PrescriptionMutation) NurseIDs() (ids []int) {
+	if id := m.nurse; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetNurse reset all changes of the "nurse" edge.
+func (m *PrescriptionMutation) ResetNurse() {
+	m.nurse = nil
+	m.clearednurse = false
+}
+
+// SetDrugID sets the drug edge to Drug by id.
+func (m *PrescriptionMutation) SetDrugID(id int) {
+	m.drug = &id
+}
+
+// ClearDrug clears the drug edge to Drug.
+func (m *PrescriptionMutation) ClearDrug() {
+	m.cleareddrug = true
+}
+
+// DrugCleared returns if the edge drug was cleared.
+func (m *PrescriptionMutation) DrugCleared() bool {
+	return m.cleareddrug
+}
+
+// DrugID returns the drug id in the mutation.
+func (m *PrescriptionMutation) DrugID() (id int, exists bool) {
+	if m.drug != nil {
+		return *m.drug, true
+	}
+	return
+}
+
+// DrugIDs returns the drug ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// DrugID instead. It exists only for internal usage by the builders.
+func (m *PrescriptionMutation) DrugIDs() (ids []int) {
+	if id := m.drug; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDrug reset all changes of the "drug" edge.
+func (m *PrescriptionMutation) ResetDrug() {
+	m.drug = nil
+	m.cleareddrug = false
+}
+
+// Op returns the operation name.
+func (m *PrescriptionMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Prescription).
+func (m *PrescriptionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during
+// this mutation. Note that, in order to get all numeric
+// fields that were in/decremented, call AddedFields().
+func (m *PrescriptionMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m._Prescrip_Note != nil {
+		fields = append(fields, prescription.FieldPrescripNote)
+	}
+	if m._Prescrip_DateTime != nil {
+		fields = append(fields, prescription.FieldPrescripDateTime)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name.
+// The second boolean value indicates that this field was
+// not set, or was not define in the schema.
+func (m *PrescriptionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case prescription.FieldPrescripNote:
+		return m.PrescripNote()
+	case prescription.FieldPrescripDateTime:
+		return m.PrescripDateTime()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database.
+// An error is returned if the mutation operation is not UpdateOne,
+// or the query to the database was failed.
+func (m *PrescriptionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case prescription.FieldPrescripNote:
+		return m.OldPrescripNote(ctx)
+	case prescription.FieldPrescripDateTime:
+		return m.OldPrescripDateTime(ctx)
+	}
+	return nil, fmt.Errorf("unknown Prescription field %s", name)
+}
+
+// SetField sets the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *PrescriptionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case prescription.FieldPrescripNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrescripNote(v)
+		return nil
+	case prescription.FieldPrescripDateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrescripDateTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Prescription field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented
+// or decremented during this mutation.
+func (m *PrescriptionMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was in/decremented
+// from a field with the given name. The second value indicates
+// that this field was not set, or was not define in the schema.
+func (m *PrescriptionMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *PrescriptionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Prescription numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared
+// during this mutation.
+func (m *PrescriptionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicates if this field was
+// cleared in this mutation.
+func (m *PrescriptionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value for the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PrescriptionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Prescription nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation regarding the
+// given field name. It returns an error if the field is not
+// defined in the schema.
+func (m *PrescriptionMutation) ResetField(name string) error {
+	switch name {
+	case prescription.FieldPrescripNote:
+		m.ResetPrescripNote()
+		return nil
+	case prescription.FieldPrescripDateTime:
+		m.ResetPrescripDateTime()
+		return nil
+	}
+	return fmt.Errorf("unknown Prescription field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this
+// mutation.
+func (m *PrescriptionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.doctor != nil {
+		edges = append(edges, prescription.EdgeDoctor)
+	}
+	if m.patient != nil {
+		edges = append(edges, prescription.EdgePatient)
+	}
+	if m.nurse != nil {
+		edges = append(edges, prescription.EdgeNurse)
+	}
+	if m.drug != nil {
+		edges = append(edges, prescription.EdgeDrug)
+	}
+	return edges
+}
+
+// AddedIDs returns all ids (to other nodes) that were added for
+// the given edge name.
+func (m *PrescriptionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case prescription.EdgeDoctor:
+		if id := m.doctor; id != nil {
+			return []ent.Value{*id}
+		}
+	case prescription.EdgePatient:
+		if id := m.patient; id != nil {
+			return []ent.Value{*id}
+		}
+	case prescription.EdgeNurse:
+		if id := m.nurse; id != nil {
+			return []ent.Value{*id}
+		}
+	case prescription.EdgeDrug:
+		if id := m.drug; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this
+// mutation.
+func (m *PrescriptionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all ids (to other nodes) that were removed for
+// the given edge name.
+func (m *PrescriptionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this
+// mutation.
+func (m *PrescriptionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.cleareddoctor {
+		edges = append(edges, prescription.EdgeDoctor)
+	}
+	if m.clearedpatient {
+		edges = append(edges, prescription.EdgePatient)
+	}
+	if m.clearednurse {
+		edges = append(edges, prescription.EdgeNurse)
+	}
+	if m.cleareddrug {
+		edges = append(edges, prescription.EdgeDrug)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean indicates if this edge was
+// cleared in this mutation.
+func (m *PrescriptionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case prescription.EdgeDoctor:
+		return m.cleareddoctor
+	case prescription.EdgePatient:
+		return m.clearedpatient
+	case prescription.EdgeNurse:
+		return m.clearednurse
+	case prescription.EdgeDrug:
+		return m.cleareddrug
+	}
+	return false
+}
+
+// ClearEdge clears the value for the given name. It returns an
+// error if the edge name is not defined in the schema.
+func (m *PrescriptionMutation) ClearEdge(name string) error {
+	switch name {
+	case prescription.EdgeDoctor:
+		m.ClearDoctor()
+		return nil
+	case prescription.EdgePatient:
+		m.ClearPatient()
+		return nil
+	case prescription.EdgeNurse:
+		m.ClearNurse()
+		return nil
+	case prescription.EdgeDrug:
+		m.ClearDrug()
+		return nil
+	}
+	return fmt.Errorf("unknown Prescription unique edge %s", name)
+}
+
+// ResetEdge resets all changes in the mutation regarding the
+// given edge name. It returns an error if the edge is not
+// defined in the schema.
+func (m *PrescriptionMutation) ResetEdge(name string) error {
+	switch name {
+	case prescription.EdgeDoctor:
+		m.ResetDoctor()
+		return nil
+	case prescription.EdgePatient:
+		m.ResetPatient()
+		return nil
+	case prescription.EdgeNurse:
+		m.ResetNurse()
+		return nil
+	case prescription.EdgeDrug:
+		m.ResetDrug()
+		return nil
+	}
+	return fmt.Errorf("unknown Prescription edge %s", name)
 }
 
 // RentMutation represents an operation that mutate the Rents

@@ -13,6 +13,7 @@ import (
 	"github.com/dhetporn/team08/ent/gender"
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/prefix"
+	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
@@ -47,55 +48,6 @@ func (pc *PatientCreate) SetPatientWeight(f float64) *PatientCreate {
 func (pc *PatientCreate) SetPatientHeight(f float64) *PatientCreate {
 	pc.mutation.SetPatientHeight(f)
 	return pc
-}
-
-// SetFrompatientID sets the frompatient edge to Rent by id.
-func (pc *PatientCreate) SetFrompatientID(id int) *PatientCreate {
-	pc.mutation.SetFrompatientID(id)
-	return pc
-}
-
-// SetNillableFrompatientID sets the frompatient edge to Rent by id if the given value is not nil.
-func (pc *PatientCreate) SetNillableFrompatientID(id *int) *PatientCreate {
-	if id != nil {
-		pc = pc.SetFrompatientID(*id)
-	}
-	return pc
-}
-
-// SetFrompatient sets the frompatient edge to Rent.
-func (pc *PatientCreate) SetFrompatient(r *Rent) *PatientCreate {
-	return pc.SetFrompatientID(r.ID)
-}
-
-// AddPatientCoveredPersonIDs adds the Patient_CoveredPerson edge to CoveredPerson by ids.
-func (pc *PatientCreate) AddPatientCoveredPersonIDs(ids ...int) *PatientCreate {
-	pc.mutation.AddPatientCoveredPersonIDs(ids...)
-	return pc
-}
-
-// AddPatientCoveredPerson adds the Patient_CoveredPerson edges to CoveredPerson.
-func (pc *PatientCreate) AddPatientCoveredPerson(c ...*CoveredPerson) *PatientCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return pc.AddPatientCoveredPersonIDs(ids...)
-}
-
-// AddPatientDiagnoseIDs adds the patient_diagnose edge to Diagnose by ids.
-func (pc *PatientCreate) AddPatientDiagnoseIDs(ids ...int) *PatientCreate {
-	pc.mutation.AddPatientDiagnoseIDs(ids...)
-	return pc
-}
-
-// AddPatientDiagnose adds the patient_diagnose edges to Diagnose.
-func (pc *PatientCreate) AddPatientDiagnose(d ...*Diagnose) *PatientCreate {
-	ids := make([]int, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return pc.AddPatientDiagnoseIDs(ids...)
 }
 
 // SetGenderID sets the gender edge to Gender by id.
@@ -153,6 +105,70 @@ func (pc *PatientCreate) SetNillableBloodtypeID(id *int) *PatientCreate {
 // SetBloodtype sets the bloodtype edge to Bloodtype.
 func (pc *PatientCreate) SetBloodtype(b *Bloodtype) *PatientCreate {
 	return pc.SetBloodtypeID(b.ID)
+}
+
+// SetFrompatientID sets the frompatient edge to Rent by id.
+func (pc *PatientCreate) SetFrompatientID(id int) *PatientCreate {
+	pc.mutation.SetFrompatientID(id)
+	return pc
+}
+
+// SetNillableFrompatientID sets the frompatient edge to Rent by id if the given value is not nil.
+func (pc *PatientCreate) SetNillableFrompatientID(id *int) *PatientCreate {
+	if id != nil {
+		pc = pc.SetFrompatientID(*id)
+	}
+	return pc
+}
+
+// SetFrompatient sets the frompatient edge to Rent.
+func (pc *PatientCreate) SetFrompatient(r *Rent) *PatientCreate {
+	return pc.SetFrompatientID(r.ID)
+}
+
+// AddPatientCoveredPersonIDs adds the Patient_CoveredPerson edge to CoveredPerson by ids.
+func (pc *PatientCreate) AddPatientCoveredPersonIDs(ids ...int) *PatientCreate {
+	pc.mutation.AddPatientCoveredPersonIDs(ids...)
+	return pc
+}
+
+// AddPatientCoveredPerson adds the Patient_CoveredPerson edges to CoveredPerson.
+func (pc *PatientCreate) AddPatientCoveredPerson(c ...*CoveredPerson) *PatientCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddPatientCoveredPersonIDs(ids...)
+}
+
+// AddPatientDiagnoseIDs adds the patient_diagnose edge to Diagnose by ids.
+func (pc *PatientCreate) AddPatientDiagnoseIDs(ids ...int) *PatientCreate {
+	pc.mutation.AddPatientDiagnoseIDs(ids...)
+	return pc
+}
+
+// AddPatientDiagnose adds the patient_diagnose edges to Diagnose.
+func (pc *PatientCreate) AddPatientDiagnose(d ...*Diagnose) *PatientCreate {
+	ids := make([]int, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pc.AddPatientDiagnoseIDs(ids...)
+}
+
+// AddPatientPrescriptionIDs adds the patient_prescription edge to Prescription by ids.
+func (pc *PatientCreate) AddPatientPrescriptionIDs(ids ...int) *PatientCreate {
+	pc.mutation.AddPatientPrescriptionIDs(ids...)
+	return pc
+}
+
+// AddPatientPrescription adds the patient_prescription edges to Prescription.
+func (pc *PatientCreate) AddPatientPrescription(p ...*Prescription) *PatientCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddPatientPrescriptionIDs(ids...)
 }
 
 // Mutation returns the PatientMutation object of the builder.
@@ -286,6 +302,63 @@ func (pc *PatientCreate) createSpec() (*Patient, *sqlgraph.CreateSpec) {
 		})
 		pa.PatientHeight = value
 	}
+	if nodes := pc.mutation.GenderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   patient.GenderTable,
+			Columns: []string{patient.GenderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: gender.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.PrefixIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   patient.PrefixTable,
+			Columns: []string{patient.PrefixColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: prefix.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.BloodtypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   patient.BloodtypeTable,
+			Columns: []string{patient.BloodtypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: bloodtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := pc.mutation.FrompatientIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -343,55 +416,17 @@ func (pc *PatientCreate) createSpec() (*Patient, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.GenderIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.PatientPrescriptionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   patient.GenderTable,
-			Columns: []string{patient.GenderColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   patient.PatientPrescriptionTable,
+			Columns: []string{patient.PatientPrescriptionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: gender.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := pc.mutation.PrefixIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   patient.PrefixTable,
-			Columns: []string{patient.PrefixColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: prefix.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := pc.mutation.BloodtypeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   patient.BloodtypeTable,
-			Columns: []string{patient.BloodtypeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: bloodtype.FieldID,
+					Column: prescription.FieldID,
 				},
 			},
 		}
