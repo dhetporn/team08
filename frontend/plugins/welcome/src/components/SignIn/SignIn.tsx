@@ -115,10 +115,12 @@ const Login: FC<{}> = () => {
         }
       }
     })
-    Toast.fire({
-      icon: 'error',
-      title: 'username หรือ password ไม่ถูกต้อง',
-    });
+    if (status == false) {
+      Toast.fire({
+        icon: 'error',
+        title: 'username หรือ password ไม่ถูกต้อง',
+      });
+    }
     status = false
   };
 
