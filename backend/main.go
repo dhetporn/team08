@@ -537,6 +537,51 @@ func main() {
 			SetDrugName(dr.Name).
 			Save(context.Background())
 	}
+	// --------------------------------- Pmay Set Data ----------------------------------------
+	// Set Tool Data
+	tools := Tools{
+		Tool: []Tool{
+			Tool{"เข็ม"},
+			Tool{"ถุงน้ำเกลือ"},
+			Tool{"เครื่องมือทำคลอด"},
+		},
+	}
+	for _, t := range tools.Tool {
+		client.Tool.
+			Create().
+			SetToolName(t.ToolName).
+			Save(context.Background())
+	}
+
+	// Set Operative Data
+	operatives := Operatives{
+		Operative: []Operative{
+			Operative{"ผ่าตัด"},
+			Operative{"เย็บแผล"},
+			Operative{"ให้น้ำเกลือ"},
+		},
+	}
+	for _, o := range operatives.Operative {
+		client.Operative.
+			Create().
+			SetOperativeName(o.OperativeName).
+			Save(context.Background())
+	}
+
+	// Set Examinationroom Data
+	examinationrooms := Examinationrooms{
+		Examinationroom: []Examinationroom{
+			Examinationroom{"ห้องผ่าตัด"},
+			Examinationroom{"ห้องเย็บแผล"},
+			Examinationroom{"ห้องให้น้ำเกลือ"},
+		},
+	}
+	for _, e := range examinationrooms.Examinationroom {
+		client.Examinationroom.
+			Create().
+			SetExaminationroomName(e.ExaminationroomName).
+			Save(context.Background())
+	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run()
