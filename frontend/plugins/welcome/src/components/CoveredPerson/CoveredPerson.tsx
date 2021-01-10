@@ -270,7 +270,7 @@ const CoveredPerson: FC<{}> = () => {
                 size="large"
                 startIcon={<SaveIcon />}
                 onClick={save}
-                component={RouterLink} to="/Tables"
+               
               >
                 SAVE
               </Button>

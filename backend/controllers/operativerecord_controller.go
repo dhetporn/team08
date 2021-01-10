@@ -11,7 +11,7 @@ import (
 	"github.com/dhetporn/team08/ent/operative"
 	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/dhetporn/team08/ent/tool"
-	"github.com/dhetporn/team08/examinationroom"
+	"github.com/dhetporn/team08/ent/examinationroom"
 	"github.com/gin-gonic/gin"
 )
 

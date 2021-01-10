@@ -108,8 +108,8 @@ type Doctors struct {
 	Doctor []Doctor
 }
 type Doctor struct {
-	DoctorEmail    string
 	DoctorName     string
+	DoctorEmail    string
 	DoctorPassword string
 	DoctorTel      string
 }
@@ -486,8 +486,9 @@ func main() {
 	// Set Doctor Data
 	doctors := Doctors{
 		Doctor: []Doctor{
-			Doctor{"ADMIN@gmail.com", "ADMIN", "123", "0123456789"},
-			Doctor{"Asia@gmail.com", "Asia", "321", "9876543210"},
+			Doctor{"Dr. James", "James@gmail.com", "James", "0889977665"},
+			Doctor{"Dr. John", "John@gmail.com", "John", "0899177998"},
+			Doctor{"Dr. Susan", "Susan@gmail.com", "Susan", "0812345671"},
 		},
 	}
 	for _, d := range doctors.Doctor {
@@ -500,20 +501,38 @@ func main() {
 			Save(context.Background())
 	}
 	// Set Disease Data
-	diseases := []string{"โรคเบาหวาน", "โรคอ้วน", "โรคกระเพาะอาหาร", "โรคหัวใจ"}
-	for _, di := range diseases {
+	diseases := Diseases{
+		Disease: []Disease{
+			Disease{"แก้วหูอักเสบ"},
+			Disease{"อัมพฤกษ์"},
+			Disease{"โรคต้อหิน"},
+			Disease{"โรคไส้ติ่งอักเสบ"},
+			Disease{"โรคเส้นเลือดขอด"},
+			Disease{"โรคทางเดินหายใจในเด็ก"},
+		},
+	}
+	for _, di := range diseases.Disease {
 		client.Disease.
 			Create().
-			SetDiseaseName(di).
+			SetDiseaseName(di.DiseaseName).
 			Save(context.Background())
 	}
 
 	// Set Department Data
-	departments := []string{"แผนกกุมารเวชกรรม", "แผนกเวชศาสตร์ฟื้นฟู", "แผนกจักษุ", "แผนกหู คอ จมูก", "แผนกจิตเวช", "แผนกศัลยกรรม"}
-	for _, dep := range departments {
+	departments := Departments{
+		Department: []Department{
+			Department{"แผนกกุมารเวชกรรม"},
+			Department{"แผนกเวชศาสตร์"},
+			Department{"แผนกจักษุ"},
+			Department{"แผนกหู คอ จมูก"},
+			Department{"แผนกศัลยกรรม"},
+			Department{"แผนกจิตเวช"},
+		},
+	}
+	for _, dep := range departments.Department {
 		client.Department.
 			Create().
-			SetDepartmentName(dep).
+			SetDepartmentName(dep.DepartmentName).
 			Save(context.Background())
 	}
 	// --------------------------------- bua Set Data ----------------------------------------

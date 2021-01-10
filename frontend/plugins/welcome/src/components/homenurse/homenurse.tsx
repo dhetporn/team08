@@ -116,7 +116,7 @@ const useStyles = makeStyles(theme => ({
         >
            <Tab label="ระบบลงทะเบียนผู้ป่วยใน" icon={<EmojiPeopleIcon />} {...a11yProps(0)}  component={RouterLink} to="/reg"/>
           <Tab label="ระบบจองห้องพักผู้ป่วย" icon={<AirlineSeatIndividualSuiteIcon />} {...a11yProps(1)} component={RouterLink} to="/rent"/>
-          <Tab label="ระบบบันทึกข้อมูลการทำหัตถการให้ผู้ป่วย" icon={<HealingIcon />} {...a11yProps(2)} />
+          <Tab label="ระบบบันทึกข้อมูลการทำหัตถการให้ผู้ป่วย" icon={<HealingIcon />} {...a11yProps(2)} component={RouterLink} to="/opera"/>
           <Tab label="ระบบการสั่งยา" icon={<LocalPharmacyIcon />} {...a11yProps(3)} component={RouterLink} to="/pre"/>
         </Tabs>
       </AppBar>

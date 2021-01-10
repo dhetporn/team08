@@ -14,6 +14,10 @@
 
 import { exists, mapValues } from '../runtime';
 import {
+    EntOperativerecord,
+    EntOperativerecordFromJSON,
+    EntOperativerecordFromJSONTyped,
+    EntOperativerecordToJSON,
     EntPrescription,
     EntPrescriptionFromJSON,
     EntPrescriptionFromJSONTyped,
@@ -37,6 +41,12 @@ export interface EntNurseEdges {
      */
     fromnurse?: Array<EntRent>;
     /**
+     * NurseOperativerecord holds the value of the Nurse_Operativerecord edge.
+     * @type {Array<EntOperativerecord>}
+     * @memberof EntNurseEdges
+     */
+    nurseOperativerecord?: Array<EntOperativerecord>;
+    /**
      * NursePrescription holds the value of the nurse_prescription edge.
      * @type {Array<EntPrescription>}
      * @memberof EntNurseEdges
@@ -55,6 +65,7 @@ export function EntNurseEdgesFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'fromnurse': !exists(json, 'fromnurse') ? undefined : ((json['fromnurse'] as Array<any>).map(EntRentFromJSON)),
+        'nurseOperativerecord': !exists(json, 'nurseOperativerecord') ? undefined : ((json['nurseOperativerecord'] as Array<any>).map(EntOperativerecordFromJSON)),
         'nursePrescription': !exists(json, 'nursePrescription') ? undefined : ((json['nursePrescription'] as Array<any>).map(EntPrescriptionFromJSON)),
     };
 }
@@ -69,6 +80,7 @@ export function EntNurseEdgesToJSON(value?: EntNurseEdges | null): any {
     return {
         
         'fromnurse': value.fromnurse === undefined ? undefined : ((value.fromnurse as Array<any>).map(EntRentToJSON)),
+        'nurseOperativerecord': value.nurseOperativerecord === undefined ? undefined : ((value.nurseOperativerecord as Array<any>).map(EntOperativerecordToJSON)),
         'nursePrescription': value.nursePrescription === undefined ? undefined : ((value.nursePrescription as Array<any>).map(EntPrescriptionToJSON)),
     };
 }

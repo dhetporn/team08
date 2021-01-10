@@ -7,7 +7,8 @@ import homedoctor from './components/homedoctor'
 import homenurse from './components/homenurse'
 import homemedical from './components/homemedical'
 import Prescription from './components/Prescription'
-
+import Diagnose from './components/Diagnose'
+import Operativerecord from './components/Operativerecord'
 //import login from './components/login'
 
 export const plugin = createPlugin({
@@ -21,7 +22,8 @@ export const plugin = createPlugin({
     router.registerRoute('/rent', Rent);
     router.registerRoute('/covered', Covered);
     router.registerRoute('/pre', Prescription);
-    
+    router.registerRoute('/dia', Diagnose);
+    router.registerRoute('/opera', Operativerecord);
     //router.registerRoute('/', login);
     
   },

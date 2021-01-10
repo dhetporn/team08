@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/tool"
+	"github.com/dhetporn/team08/ent/tool"
 	"github.com/gin-gonic/gin"
 )
 

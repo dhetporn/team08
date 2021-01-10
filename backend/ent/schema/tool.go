@@ -1,24 +1,26 @@
 package schema
- 
+
 import (
-    "github.com/facebookincubator/ent/schema/edge"
-    "github.com/facebookincubator/ent/schema/field"
-    "github.com/facebookincubator/ent"
+	"github.com/facebookincubator/ent"
+	"github.com/facebookincubator/ent/schema/edge"
+	"github.com/facebookincubator/ent/schema/field"
 )
-// Nurse holds the schema definition for the Nurse entity.
+
+// Tool holds the schema definition for the Tool entity.
 type Tool struct {
-    ent.Schema
+	ent.Schema
 }
-// Fields of the Nurse.
+
+// Fields of the Tool.
 func (Tool) Fields() []ent.Field {
-    return []ent.Field{
-        field.String("Tool_Name").NotEmpty(),
-		
-    }
- }
- //Edges of the Certificate.
- func (Tool) Edges() []ent.Edge {
-    return []ent.Edge{
-		edge. To("Tool_Operativerecord",Operativerecord.Type).StorageKey(edge.Column("Tool_id")),
- }
- }
+	return []ent.Field{
+		field.String("Tool_Name").NotEmpty(),
+	}
+}
+
+//Edges of the Tool.
+func (Tool) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To("Tool_Operativerecord", Operativerecord.Type).StorageKey(edge.Column("Tool_id")),
+	}
+}
