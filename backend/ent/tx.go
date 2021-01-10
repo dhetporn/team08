@@ -28,6 +28,8 @@ type Tx struct {
 	Doctor *DoctorClient
 	// Drug is the client for interacting with the Drug builders.
 	Drug *DrugClient
+	// Examinationroom is the client for interacting with the Examinationroom builders.
+	Examinationroom *ExaminationroomClient
 	// Fund is the client for interacting with the Fund builders.
 	Fund *FundClient
 	// Gender is the client for interacting with the Gender builders.
@@ -36,6 +38,10 @@ type Tx struct {
 	Medical *MedicalClient
 	// Nurse is the client for interacting with the Nurse builders.
 	Nurse *NurseClient
+	// Operative is the client for interacting with the Operative builders.
+	Operative *OperativeClient
+	// Operativerecord is the client for interacting with the Operativerecord builders.
+	Operativerecord *OperativerecordClient
 	// Patient is the client for interacting with the Patient builders.
 	Patient *PatientClient
 	// Prefix is the client for interacting with the Prefix builders.
@@ -50,6 +56,8 @@ type Tx struct {
 	Roomtype *RoomtypeClient
 	// SchemeType is the client for interacting with the SchemeType builders.
 	SchemeType *SchemeTypeClient
+	// Tool is the client for interacting with the Tool builders.
+	Tool *ToolClient
 
 	// lazily loaded.
 	client     *Client
@@ -193,10 +201,13 @@ func (tx *Tx) init() {
 	tx.Disease = NewDiseaseClient(tx.config)
 	tx.Doctor = NewDoctorClient(tx.config)
 	tx.Drug = NewDrugClient(tx.config)
+	tx.Examinationroom = NewExaminationroomClient(tx.config)
 	tx.Fund = NewFundClient(tx.config)
 	tx.Gender = NewGenderClient(tx.config)
 	tx.Medical = NewMedicalClient(tx.config)
 	tx.Nurse = NewNurseClient(tx.config)
+	tx.Operative = NewOperativeClient(tx.config)
+	tx.Operativerecord = NewOperativerecordClient(tx.config)
 	tx.Patient = NewPatientClient(tx.config)
 	tx.Prefix = NewPrefixClient(tx.config)
 	tx.Prescription = NewPrescriptionClient(tx.config)
@@ -204,6 +215,7 @@ func (tx *Tx) init() {
 	tx.Room = NewRoomClient(tx.config)
 	tx.Roomtype = NewRoomtypeClient(tx.config)
 	tx.SchemeType = NewSchemeTypeClient(tx.config)
+	tx.Tool = NewToolClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

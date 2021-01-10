@@ -171,6 +171,18 @@ var (
 		PrimaryKey:  []*schema.Column{DrugsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
+	// ExaminationroomsColumns holds the columns for the "examinationrooms" table.
+	ExaminationroomsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "examinationroom_name", Type: field.TypeString},
+	}
+	// ExaminationroomsTable holds the schema information for the "examinationrooms" table.
+	ExaminationroomsTable = &schema.Table{
+		Name:        "examinationrooms",
+		Columns:     ExaminationroomsColumns,
+		PrimaryKey:  []*schema.Column{ExaminationroomsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// FundsColumns holds the columns for the "funds" table.
 	FundsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -224,6 +236,63 @@ var (
 		Columns:     NursesColumns,
 		PrimaryKey:  []*schema.Column{NursesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
+	}
+	// OperativesColumns holds the columns for the "operatives" table.
+	OperativesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "operative_name", Type: field.TypeString, Unique: true},
+	}
+	// OperativesTable holds the schema information for the "operatives" table.
+	OperativesTable = &schema.Table{
+		Name:        "operatives",
+		Columns:     OperativesColumns,
+		PrimaryKey:  []*schema.Column{OperativesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
+	// OperativerecordsColumns holds the columns for the "operativerecords" table.
+	OperativerecordsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "operative_time", Type: field.TypeTime},
+		{Name: "Examinationroom_id", Type: field.TypeInt, Nullable: true},
+		{Name: "Nurse_id", Type: field.TypeInt, Nullable: true},
+		{Name: "Operative_id", Type: field.TypeInt, Nullable: true},
+		{Name: "Tool_id", Type: field.TypeInt, Nullable: true},
+	}
+	// OperativerecordsTable holds the schema information for the "operativerecords" table.
+	OperativerecordsTable = &schema.Table{
+		Name:       "operativerecords",
+		Columns:    OperativerecordsColumns,
+		PrimaryKey: []*schema.Column{OperativerecordsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:  "operativerecords_examinationrooms_Examinationroom_Operativerecord",
+				Columns: []*schema.Column{OperativerecordsColumns[2]},
+
+				RefColumns: []*schema.Column{ExaminationroomsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "operativerecords_nurses_Nurse_Operativerecord",
+				Columns: []*schema.Column{OperativerecordsColumns[3]},
+
+				RefColumns: []*schema.Column{NursesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "operativerecords_operatives_Operative_Operativerecord",
+				Columns: []*schema.Column{OperativerecordsColumns[4]},
+
+				RefColumns: []*schema.Column{OperativesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:  "operativerecords_tools_Tool_Operativerecord",
+				Columns: []*schema.Column{OperativerecordsColumns[5]},
+
+				RefColumns: []*schema.Column{ToolsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// PatientsColumns holds the columns for the "patients" table.
 	PatientsColumns = []*schema.Column{
@@ -411,6 +480,18 @@ var (
 		PrimaryKey:  []*schema.Column{SchemeTypesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{},
 	}
+	// ToolsColumns holds the columns for the "tools" table.
+	ToolsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "tool_name", Type: field.TypeString},
+	}
+	// ToolsTable holds the schema information for the "tools" table.
+	ToolsTable = &schema.Table{
+		Name:        "tools",
+		Columns:     ToolsColumns,
+		PrimaryKey:  []*schema.Column{ToolsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BloodtypesTable,
@@ -421,10 +502,13 @@ var (
 		DiseasesTable,
 		DoctorsTable,
 		DrugsTable,
+		ExaminationroomsTable,
 		FundsTable,
 		GendersTable,
 		MedicalsTable,
 		NursesTable,
+		OperativesTable,
+		OperativerecordsTable,
 		PatientsTable,
 		PrefixesTable,
 		PrescriptionsTable,
@@ -432,6 +516,7 @@ var (
 		RoomsTable,
 		RoomtypesTable,
 		SchemeTypesTable,
+		ToolsTable,
 	}
 )
 
@@ -444,6 +529,10 @@ func init() {
 	DiagnosesTable.ForeignKeys[1].RefTable = DiseasesTable
 	DiagnosesTable.ForeignKeys[2].RefTable = DoctorsTable
 	DiagnosesTable.ForeignKeys[3].RefTable = PatientsTable
+	OperativerecordsTable.ForeignKeys[0].RefTable = ExaminationroomsTable
+	OperativerecordsTable.ForeignKeys[1].RefTable = NursesTable
+	OperativerecordsTable.ForeignKeys[2].RefTable = OperativesTable
+	OperativerecordsTable.ForeignKeys[3].RefTable = ToolsTable
 	PatientsTable.ForeignKeys[0].RefTable = BloodtypesTable
 	PatientsTable.ForeignKeys[1].RefTable = GendersTable
 	PatientsTable.ForeignKeys[2].RefTable = PrefixesTable

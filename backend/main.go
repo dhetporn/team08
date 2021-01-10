@@ -139,6 +139,35 @@ type Drug struct {
 	Name string
 }
 
+// --------------------------------- Pmay ----------------------------------------
+type Examinationrooms struct {
+	Examinationroom []Examinationroom
+}
+type Examinationroom struct {
+	ExaminationroomName string
+}
+
+type Tools struct {
+	Tool []Tool
+}
+type Tool struct {
+	ToolName string
+}
+
+type Operatives struct {
+	Operative []Operative
+}
+type Operative struct {
+	OperativeName string
+}
+
+type Operativerecords struct {
+	Operativerecord []Operativerecord
+}
+type Operativerecord struct {
+	OperativerecordTime string
+}
+
 // @title SUT SA Example API Playlist Vidoe
 // @version 1.0
 // @description This is a sample server for SUT SE 2563
@@ -218,6 +247,11 @@ func main() {
 	// --------------------------------- bua controller ----------------------------------------
 	controllers.NewDrugController(v1, client)
 	controllers.NewPrescriptionController(v1, client)
+	// --------------------------------- Pmay ----------------------------------------
+	controllers.NewExaminationroomController(v1, client)
+	controllers.NewToolController(v1, client)
+	controllers.NewOperativeController(v1, client)
+	controllers.NewOperativerecordController(v1, client)
 	// --------------------------------- gop & kao Set Data ----------------------------------------
 	// Set Nuses Data
 	nurses := Nurses{

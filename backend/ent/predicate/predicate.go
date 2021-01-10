@@ -30,6 +30,9 @@ type Doctor func(*sql.Selector)
 // Drug is the predicate function for drug builders.
 type Drug func(*sql.Selector)
 
+// Examinationroom is the predicate function for examinationroom builders.
+type Examinationroom func(*sql.Selector)
+
 // Fund is the predicate function for fund builders.
 type Fund func(*sql.Selector)
 
@@ -41,6 +44,12 @@ type Medical func(*sql.Selector)
 
 // Nurse is the predicate function for nurse builders.
 type Nurse func(*sql.Selector)
+
+// Operative is the predicate function for operative builders.
+type Operative func(*sql.Selector)
+
+// Operativerecord is the predicate function for operativerecord builders.
+type Operativerecord func(*sql.Selector)
 
 // Patient is the predicate function for patient builders.
 type Patient func(*sql.Selector)
@@ -62,3 +71,6 @@ type Roomtype func(*sql.Selector)
 
 // SchemeType is the predicate function for schemetype builders.
 type SchemeType func(*sql.Selector)
+
+// Tool is the predicate function for tool builders.
+type Tool func(*sql.Selector)

@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/dhetporn/team08/ent/nurse"
+	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
@@ -83,6 +84,21 @@ func (nu *NurseUpdate) AddNursePrescription(p ...*Prescription) *NurseUpdate {
 	return nu.AddNursePrescriptionIDs(ids...)
 }
 
+// AddNurseOperativerecordIDs adds the Nurse_Operativerecord edge to Operativerecord by ids.
+func (nu *NurseUpdate) AddNurseOperativerecordIDs(ids ...int) *NurseUpdate {
+	nu.mutation.AddNurseOperativerecordIDs(ids...)
+	return nu
+}
+
+// AddNurseOperativerecord adds the Nurse_Operativerecord edges to Operativerecord.
+func (nu *NurseUpdate) AddNurseOperativerecord(o ...*Operativerecord) *NurseUpdate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return nu.AddNurseOperativerecordIDs(ids...)
+}
+
 // Mutation returns the NurseMutation object of the builder.
 func (nu *NurseUpdate) Mutation() *NurseMutation {
 	return nu.mutation
@@ -116,6 +132,21 @@ func (nu *NurseUpdate) RemoveNursePrescription(p ...*Prescription) *NurseUpdate 
 		ids[i] = p[i].ID
 	}
 	return nu.RemoveNursePrescriptionIDs(ids...)
+}
+
+// RemoveNurseOperativerecordIDs removes the Nurse_Operativerecord edge to Operativerecord by ids.
+func (nu *NurseUpdate) RemoveNurseOperativerecordIDs(ids ...int) *NurseUpdate {
+	nu.mutation.RemoveNurseOperativerecordIDs(ids...)
+	return nu
+}
+
+// RemoveNurseOperativerecord removes Nurse_Operativerecord edges to Operativerecord.
+func (nu *NurseUpdate) RemoveNurseOperativerecord(o ...*Operativerecord) *NurseUpdate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return nu.RemoveNurseOperativerecordIDs(ids...)
 }
 
 // Save executes the query and returns the number of rows/vertices matched by this operation.
@@ -312,6 +343,44 @@ func (nu *NurseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if nodes := nu.mutation.RemovedNurseOperativerecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NurseOperativerecordTable,
+			Columns: []string{nurse.NurseOperativerecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: operativerecord.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.NurseOperativerecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NurseOperativerecordTable,
+			Columns: []string{nurse.NurseOperativerecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: operativerecord.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, nu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{nurse.Label}
@@ -384,6 +453,21 @@ func (nuo *NurseUpdateOne) AddNursePrescription(p ...*Prescription) *NurseUpdate
 	return nuo.AddNursePrescriptionIDs(ids...)
 }
 
+// AddNurseOperativerecordIDs adds the Nurse_Operativerecord edge to Operativerecord by ids.
+func (nuo *NurseUpdateOne) AddNurseOperativerecordIDs(ids ...int) *NurseUpdateOne {
+	nuo.mutation.AddNurseOperativerecordIDs(ids...)
+	return nuo
+}
+
+// AddNurseOperativerecord adds the Nurse_Operativerecord edges to Operativerecord.
+func (nuo *NurseUpdateOne) AddNurseOperativerecord(o ...*Operativerecord) *NurseUpdateOne {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return nuo.AddNurseOperativerecordIDs(ids...)
+}
+
 // Mutation returns the NurseMutation object of the builder.
 func (nuo *NurseUpdateOne) Mutation() *NurseMutation {
 	return nuo.mutation
@@ -417,6 +501,21 @@ func (nuo *NurseUpdateOne) RemoveNursePrescription(p ...*Prescription) *NurseUpd
 		ids[i] = p[i].ID
 	}
 	return nuo.RemoveNursePrescriptionIDs(ids...)
+}
+
+// RemoveNurseOperativerecordIDs removes the Nurse_Operativerecord edge to Operativerecord by ids.
+func (nuo *NurseUpdateOne) RemoveNurseOperativerecordIDs(ids ...int) *NurseUpdateOne {
+	nuo.mutation.RemoveNurseOperativerecordIDs(ids...)
+	return nuo
+}
+
+// RemoveNurseOperativerecord removes Nurse_Operativerecord edges to Operativerecord.
+func (nuo *NurseUpdateOne) RemoveNurseOperativerecord(o ...*Operativerecord) *NurseUpdateOne {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return nuo.RemoveNurseOperativerecordIDs(ids...)
 }
 
 // Save executes the query and returns the updated entity.
@@ -603,6 +702,44 @@ func (nuo *NurseUpdateOne) sqlSave(ctx context.Context) (n *Nurse, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nodes := nuo.mutation.RemovedNurseOperativerecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NurseOperativerecordTable,
+			Columns: []string{nurse.NurseOperativerecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: operativerecord.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.NurseOperativerecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NurseOperativerecordTable,
+			Columns: []string{nurse.NurseOperativerecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: operativerecord.FieldID,
 				},
 			},
 		}

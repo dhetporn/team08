@@ -113,6 +113,19 @@ func (f DrugFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
+// The ExaminationroomFunc type is an adapter to allow the use of ordinary
+// function as Examinationroom mutator.
+type ExaminationroomFunc func(context.Context, *ent.ExaminationroomMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ExaminationroomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ExaminationroomMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExaminationroomMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The FundFunc type is an adapter to allow the use of ordinary
 // function as Fund mutator.
 type FundFunc func(context.Context, *ent.FundMutation) (ent.Value, error)
@@ -161,6 +174,32 @@ func (f NurseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	mv, ok := m.(*ent.NurseMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NurseMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The OperativeFunc type is an adapter to allow the use of ordinary
+// function as Operative mutator.
+type OperativeFunc func(context.Context, *ent.OperativeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OperativeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OperativeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OperativeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The OperativerecordFunc type is an adapter to allow the use of ordinary
+// function as Operativerecord mutator.
+type OperativerecordFunc func(context.Context, *ent.OperativerecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OperativerecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OperativerecordMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OperativerecordMutation", m)
 	}
 	return f(ctx, mv)
 }
@@ -252,6 +291,19 @@ func (f SchemeTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	mv, ok := m.(*ent.SchemeTypeMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SchemeTypeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ToolFunc type is an adapter to allow the use of ordinary
+// function as Tool mutator.
+type ToolFunc func(context.Context, *ent.ToolMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ToolFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ToolMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ToolMutation", m)
 	}
 	return f(ctx, mv)
 }

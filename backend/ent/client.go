@@ -17,10 +17,13 @@ import (
 	"github.com/dhetporn/team08/ent/disease"
 	"github.com/dhetporn/team08/ent/doctor"
 	"github.com/dhetporn/team08/ent/drug"
+	"github.com/dhetporn/team08/ent/examinationroom"
 	"github.com/dhetporn/team08/ent/fund"
 	"github.com/dhetporn/team08/ent/gender"
 	"github.com/dhetporn/team08/ent/medical"
 	"github.com/dhetporn/team08/ent/nurse"
+	"github.com/dhetporn/team08/ent/operative"
+	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/prefix"
 	"github.com/dhetporn/team08/ent/prescription"
@@ -28,6 +31,7 @@ import (
 	"github.com/dhetporn/team08/ent/room"
 	"github.com/dhetporn/team08/ent/roomtype"
 	"github.com/dhetporn/team08/ent/schemetype"
+	"github.com/dhetporn/team08/ent/tool"
 
 	"github.com/facebookincubator/ent/dialect"
 	"github.com/facebookincubator/ent/dialect/sql"
@@ -55,6 +59,8 @@ type Client struct {
 	Doctor *DoctorClient
 	// Drug is the client for interacting with the Drug builders.
 	Drug *DrugClient
+	// Examinationroom is the client for interacting with the Examinationroom builders.
+	Examinationroom *ExaminationroomClient
 	// Fund is the client for interacting with the Fund builders.
 	Fund *FundClient
 	// Gender is the client for interacting with the Gender builders.
@@ -63,6 +69,10 @@ type Client struct {
 	Medical *MedicalClient
 	// Nurse is the client for interacting with the Nurse builders.
 	Nurse *NurseClient
+	// Operative is the client for interacting with the Operative builders.
+	Operative *OperativeClient
+	// Operativerecord is the client for interacting with the Operativerecord builders.
+	Operativerecord *OperativerecordClient
 	// Patient is the client for interacting with the Patient builders.
 	Patient *PatientClient
 	// Prefix is the client for interacting with the Prefix builders.
@@ -77,6 +87,8 @@ type Client struct {
 	Roomtype *RoomtypeClient
 	// SchemeType is the client for interacting with the SchemeType builders.
 	SchemeType *SchemeTypeClient
+	// Tool is the client for interacting with the Tool builders.
+	Tool *ToolClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -98,10 +110,13 @@ func (c *Client) init() {
 	c.Disease = NewDiseaseClient(c.config)
 	c.Doctor = NewDoctorClient(c.config)
 	c.Drug = NewDrugClient(c.config)
+	c.Examinationroom = NewExaminationroomClient(c.config)
 	c.Fund = NewFundClient(c.config)
 	c.Gender = NewGenderClient(c.config)
 	c.Medical = NewMedicalClient(c.config)
 	c.Nurse = NewNurseClient(c.config)
+	c.Operative = NewOperativeClient(c.config)
+	c.Operativerecord = NewOperativerecordClient(c.config)
 	c.Patient = NewPatientClient(c.config)
 	c.Prefix = NewPrefixClient(c.config)
 	c.Prescription = NewPrescriptionClient(c.config)
@@ -109,6 +124,7 @@ func (c *Client) init() {
 	c.Room = NewRoomClient(c.config)
 	c.Roomtype = NewRoomtypeClient(c.config)
 	c.SchemeType = NewSchemeTypeClient(c.config)
+	c.Tool = NewToolClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -139,27 +155,31 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	}
 	cfg := config{driver: tx, log: c.log, debug: c.debug, hooks: c.hooks}
 	return &Tx{
-		ctx:           ctx,
-		config:        cfg,
-		Bloodtype:     NewBloodtypeClient(cfg),
-		Certificate:   NewCertificateClient(cfg),
-		CoveredPerson: NewCoveredPersonClient(cfg),
-		Department:    NewDepartmentClient(cfg),
-		Diagnose:      NewDiagnoseClient(cfg),
-		Disease:       NewDiseaseClient(cfg),
-		Doctor:        NewDoctorClient(cfg),
-		Drug:          NewDrugClient(cfg),
-		Fund:          NewFundClient(cfg),
-		Gender:        NewGenderClient(cfg),
-		Medical:       NewMedicalClient(cfg),
-		Nurse:         NewNurseClient(cfg),
-		Patient:       NewPatientClient(cfg),
-		Prefix:        NewPrefixClient(cfg),
-		Prescription:  NewPrescriptionClient(cfg),
-		Rent:          NewRentClient(cfg),
-		Room:          NewRoomClient(cfg),
-		Roomtype:      NewRoomtypeClient(cfg),
-		SchemeType:    NewSchemeTypeClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Bloodtype:       NewBloodtypeClient(cfg),
+		Certificate:     NewCertificateClient(cfg),
+		CoveredPerson:   NewCoveredPersonClient(cfg),
+		Department:      NewDepartmentClient(cfg),
+		Diagnose:        NewDiagnoseClient(cfg),
+		Disease:         NewDiseaseClient(cfg),
+		Doctor:          NewDoctorClient(cfg),
+		Drug:            NewDrugClient(cfg),
+		Examinationroom: NewExaminationroomClient(cfg),
+		Fund:            NewFundClient(cfg),
+		Gender:          NewGenderClient(cfg),
+		Medical:         NewMedicalClient(cfg),
+		Nurse:           NewNurseClient(cfg),
+		Operative:       NewOperativeClient(cfg),
+		Operativerecord: NewOperativerecordClient(cfg),
+		Patient:         NewPatientClient(cfg),
+		Prefix:          NewPrefixClient(cfg),
+		Prescription:    NewPrescriptionClient(cfg),
+		Rent:            NewRentClient(cfg),
+		Room:            NewRoomClient(cfg),
+		Roomtype:        NewRoomtypeClient(cfg),
+		SchemeType:      NewSchemeTypeClient(cfg),
+		Tool:            NewToolClient(cfg),
 	}, nil
 }
 
@@ -174,26 +194,30 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	}
 	cfg := config{driver: &txDriver{tx: tx, drv: c.driver}, log: c.log, debug: c.debug, hooks: c.hooks}
 	return &Tx{
-		config:        cfg,
-		Bloodtype:     NewBloodtypeClient(cfg),
-		Certificate:   NewCertificateClient(cfg),
-		CoveredPerson: NewCoveredPersonClient(cfg),
-		Department:    NewDepartmentClient(cfg),
-		Diagnose:      NewDiagnoseClient(cfg),
-		Disease:       NewDiseaseClient(cfg),
-		Doctor:        NewDoctorClient(cfg),
-		Drug:          NewDrugClient(cfg),
-		Fund:          NewFundClient(cfg),
-		Gender:        NewGenderClient(cfg),
-		Medical:       NewMedicalClient(cfg),
-		Nurse:         NewNurseClient(cfg),
-		Patient:       NewPatientClient(cfg),
-		Prefix:        NewPrefixClient(cfg),
-		Prescription:  NewPrescriptionClient(cfg),
-		Rent:          NewRentClient(cfg),
-		Room:          NewRoomClient(cfg),
-		Roomtype:      NewRoomtypeClient(cfg),
-		SchemeType:    NewSchemeTypeClient(cfg),
+		config:          cfg,
+		Bloodtype:       NewBloodtypeClient(cfg),
+		Certificate:     NewCertificateClient(cfg),
+		CoveredPerson:   NewCoveredPersonClient(cfg),
+		Department:      NewDepartmentClient(cfg),
+		Diagnose:        NewDiagnoseClient(cfg),
+		Disease:         NewDiseaseClient(cfg),
+		Doctor:          NewDoctorClient(cfg),
+		Drug:            NewDrugClient(cfg),
+		Examinationroom: NewExaminationroomClient(cfg),
+		Fund:            NewFundClient(cfg),
+		Gender:          NewGenderClient(cfg),
+		Medical:         NewMedicalClient(cfg),
+		Nurse:           NewNurseClient(cfg),
+		Operative:       NewOperativeClient(cfg),
+		Operativerecord: NewOperativerecordClient(cfg),
+		Patient:         NewPatientClient(cfg),
+		Prefix:          NewPrefixClient(cfg),
+		Prescription:    NewPrescriptionClient(cfg),
+		Rent:            NewRentClient(cfg),
+		Room:            NewRoomClient(cfg),
+		Roomtype:        NewRoomtypeClient(cfg),
+		SchemeType:      NewSchemeTypeClient(cfg),
+		Tool:            NewToolClient(cfg),
 	}, nil
 }
 
@@ -230,10 +254,13 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Disease.Use(hooks...)
 	c.Doctor.Use(hooks...)
 	c.Drug.Use(hooks...)
+	c.Examinationroom.Use(hooks...)
 	c.Fund.Use(hooks...)
 	c.Gender.Use(hooks...)
 	c.Medical.Use(hooks...)
 	c.Nurse.Use(hooks...)
+	c.Operative.Use(hooks...)
+	c.Operativerecord.Use(hooks...)
 	c.Patient.Use(hooks...)
 	c.Prefix.Use(hooks...)
 	c.Prescription.Use(hooks...)
@@ -241,6 +268,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Room.Use(hooks...)
 	c.Roomtype.Use(hooks...)
 	c.SchemeType.Use(hooks...)
+	c.Tool.Use(hooks...)
 }
 
 // BloodtypeClient is a client for the Bloodtype schema.
@@ -1147,6 +1175,105 @@ func (c *DrugClient) Hooks() []Hook {
 	return c.hooks.Drug
 }
 
+// ExaminationroomClient is a client for the Examinationroom schema.
+type ExaminationroomClient struct {
+	config
+}
+
+// NewExaminationroomClient returns a client for the Examinationroom from the given config.
+func NewExaminationroomClient(c config) *ExaminationroomClient {
+	return &ExaminationroomClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `examinationroom.Hooks(f(g(h())))`.
+func (c *ExaminationroomClient) Use(hooks ...Hook) {
+	c.hooks.Examinationroom = append(c.hooks.Examinationroom, hooks...)
+}
+
+// Create returns a create builder for Examinationroom.
+func (c *ExaminationroomClient) Create() *ExaminationroomCreate {
+	mutation := newExaminationroomMutation(c.config, OpCreate)
+	return &ExaminationroomCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Update returns an update builder for Examinationroom.
+func (c *ExaminationroomClient) Update() *ExaminationroomUpdate {
+	mutation := newExaminationroomMutation(c.config, OpUpdate)
+	return &ExaminationroomUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ExaminationroomClient) UpdateOne(e *Examinationroom) *ExaminationroomUpdateOne {
+	mutation := newExaminationroomMutation(c.config, OpUpdateOne, withExaminationroom(e))
+	return &ExaminationroomUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ExaminationroomClient) UpdateOneID(id int) *ExaminationroomUpdateOne {
+	mutation := newExaminationroomMutation(c.config, OpUpdateOne, withExaminationroomID(id))
+	return &ExaminationroomUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Examinationroom.
+func (c *ExaminationroomClient) Delete() *ExaminationroomDelete {
+	mutation := newExaminationroomMutation(c.config, OpDelete)
+	return &ExaminationroomDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ExaminationroomClient) DeleteOne(e *Examinationroom) *ExaminationroomDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ExaminationroomClient) DeleteOneID(id int) *ExaminationroomDeleteOne {
+	builder := c.Delete().Where(examinationroom.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ExaminationroomDeleteOne{builder}
+}
+
+// Create returns a query builder for Examinationroom.
+func (c *ExaminationroomClient) Query() *ExaminationroomQuery {
+	return &ExaminationroomQuery{config: c.config}
+}
+
+// Get returns a Examinationroom entity by its id.
+func (c *ExaminationroomClient) Get(ctx context.Context, id int) (*Examinationroom, error) {
+	return c.Query().Where(examinationroom.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ExaminationroomClient) GetX(ctx context.Context, id int) *Examinationroom {
+	e, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return e
+}
+
+// QueryExaminationroomOperativerecord queries the Examinationroom_Operativerecord edge of a Examinationroom.
+func (c *ExaminationroomClient) QueryExaminationroomOperativerecord(e *Examinationroom) *OperativerecordQuery {
+	query := &OperativerecordQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(examinationroom.Table, examinationroom.FieldID, id),
+			sqlgraph.To(operativerecord.Table, operativerecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, examinationroom.ExaminationroomOperativerecordTable, examinationroom.ExaminationroomOperativerecordColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ExaminationroomClient) Hooks() []Hook {
+	return c.hooks.Examinationroom
+}
+
 // FundClient is a client for the Fund schema.
 type FundClient struct {
 	config
@@ -1538,9 +1665,271 @@ func (c *NurseClient) QueryNursePrescription(n *Nurse) *PrescriptionQuery {
 	return query
 }
 
+// QueryNurseOperativerecord queries the Nurse_Operativerecord edge of a Nurse.
+func (c *NurseClient) QueryNurseOperativerecord(n *Nurse) *OperativerecordQuery {
+	query := &OperativerecordQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := n.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(nurse.Table, nurse.FieldID, id),
+			sqlgraph.To(operativerecord.Table, operativerecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, nurse.NurseOperativerecordTable, nurse.NurseOperativerecordColumn),
+		)
+		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *NurseClient) Hooks() []Hook {
 	return c.hooks.Nurse
+}
+
+// OperativeClient is a client for the Operative schema.
+type OperativeClient struct {
+	config
+}
+
+// NewOperativeClient returns a client for the Operative from the given config.
+func NewOperativeClient(c config) *OperativeClient {
+	return &OperativeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `operative.Hooks(f(g(h())))`.
+func (c *OperativeClient) Use(hooks ...Hook) {
+	c.hooks.Operative = append(c.hooks.Operative, hooks...)
+}
+
+// Create returns a create builder for Operative.
+func (c *OperativeClient) Create() *OperativeCreate {
+	mutation := newOperativeMutation(c.config, OpCreate)
+	return &OperativeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Update returns an update builder for Operative.
+func (c *OperativeClient) Update() *OperativeUpdate {
+	mutation := newOperativeMutation(c.config, OpUpdate)
+	return &OperativeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OperativeClient) UpdateOne(o *Operative) *OperativeUpdateOne {
+	mutation := newOperativeMutation(c.config, OpUpdateOne, withOperative(o))
+	return &OperativeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OperativeClient) UpdateOneID(id int) *OperativeUpdateOne {
+	mutation := newOperativeMutation(c.config, OpUpdateOne, withOperativeID(id))
+	return &OperativeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Operative.
+func (c *OperativeClient) Delete() *OperativeDelete {
+	mutation := newOperativeMutation(c.config, OpDelete)
+	return &OperativeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *OperativeClient) DeleteOne(o *Operative) *OperativeDeleteOne {
+	return c.DeleteOneID(o.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *OperativeClient) DeleteOneID(id int) *OperativeDeleteOne {
+	builder := c.Delete().Where(operative.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OperativeDeleteOne{builder}
+}
+
+// Create returns a query builder for Operative.
+func (c *OperativeClient) Query() *OperativeQuery {
+	return &OperativeQuery{config: c.config}
+}
+
+// Get returns a Operative entity by its id.
+func (c *OperativeClient) Get(ctx context.Context, id int) (*Operative, error) {
+	return c.Query().Where(operative.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OperativeClient) GetX(ctx context.Context, id int) *Operative {
+	o, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return o
+}
+
+// QueryOperativeOperativerecord queries the Operative_Operativerecord edge of a Operative.
+func (c *OperativeClient) QueryOperativeOperativerecord(o *Operative) *OperativerecordQuery {
+	query := &OperativerecordQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(operative.Table, operative.FieldID, id),
+			sqlgraph.To(operativerecord.Table, operativerecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, operative.OperativeOperativerecordTable, operative.OperativeOperativerecordColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OperativeClient) Hooks() []Hook {
+	return c.hooks.Operative
+}
+
+// OperativerecordClient is a client for the Operativerecord schema.
+type OperativerecordClient struct {
+	config
+}
+
+// NewOperativerecordClient returns a client for the Operativerecord from the given config.
+func NewOperativerecordClient(c config) *OperativerecordClient {
+	return &OperativerecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `operativerecord.Hooks(f(g(h())))`.
+func (c *OperativerecordClient) Use(hooks ...Hook) {
+	c.hooks.Operativerecord = append(c.hooks.Operativerecord, hooks...)
+}
+
+// Create returns a create builder for Operativerecord.
+func (c *OperativerecordClient) Create() *OperativerecordCreate {
+	mutation := newOperativerecordMutation(c.config, OpCreate)
+	return &OperativerecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Update returns an update builder for Operativerecord.
+func (c *OperativerecordClient) Update() *OperativerecordUpdate {
+	mutation := newOperativerecordMutation(c.config, OpUpdate)
+	return &OperativerecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OperativerecordClient) UpdateOne(o *Operativerecord) *OperativerecordUpdateOne {
+	mutation := newOperativerecordMutation(c.config, OpUpdateOne, withOperativerecord(o))
+	return &OperativerecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OperativerecordClient) UpdateOneID(id int) *OperativerecordUpdateOne {
+	mutation := newOperativerecordMutation(c.config, OpUpdateOne, withOperativerecordID(id))
+	return &OperativerecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Operativerecord.
+func (c *OperativerecordClient) Delete() *OperativerecordDelete {
+	mutation := newOperativerecordMutation(c.config, OpDelete)
+	return &OperativerecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *OperativerecordClient) DeleteOne(o *Operativerecord) *OperativerecordDeleteOne {
+	return c.DeleteOneID(o.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *OperativerecordClient) DeleteOneID(id int) *OperativerecordDeleteOne {
+	builder := c.Delete().Where(operativerecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OperativerecordDeleteOne{builder}
+}
+
+// Create returns a query builder for Operativerecord.
+func (c *OperativerecordClient) Query() *OperativerecordQuery {
+	return &OperativerecordQuery{config: c.config}
+}
+
+// Get returns a Operativerecord entity by its id.
+func (c *OperativerecordClient) Get(ctx context.Context, id int) (*Operativerecord, error) {
+	return c.Query().Where(operativerecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OperativerecordClient) GetX(ctx context.Context, id int) *Operativerecord {
+	o, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return o
+}
+
+// QueryExaminationroom queries the Examinationroom edge of a Operativerecord.
+func (c *OperativerecordClient) QueryExaminationroom(o *Operativerecord) *ExaminationroomQuery {
+	query := &ExaminationroomQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(operativerecord.Table, operativerecord.FieldID, id),
+			sqlgraph.To(examinationroom.Table, examinationroom.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, operativerecord.ExaminationroomTable, operativerecord.ExaminationroomColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryNurse queries the Nurse edge of a Operativerecord.
+func (c *OperativerecordClient) QueryNurse(o *Operativerecord) *NurseQuery {
+	query := &NurseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(operativerecord.Table, operativerecord.FieldID, id),
+			sqlgraph.To(nurse.Table, nurse.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, operativerecord.NurseTable, operativerecord.NurseColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOperative queries the Operative edge of a Operativerecord.
+func (c *OperativerecordClient) QueryOperative(o *Operativerecord) *OperativeQuery {
+	query := &OperativeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(operativerecord.Table, operativerecord.FieldID, id),
+			sqlgraph.To(operative.Table, operative.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, operativerecord.OperativeTable, operativerecord.OperativeColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTool queries the Tool edge of a Operativerecord.
+func (c *OperativerecordClient) QueryTool(o *Operativerecord) *ToolQuery {
+	query := &ToolQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(operativerecord.Table, operativerecord.FieldID, id),
+			sqlgraph.To(tool.Table, tool.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, operativerecord.ToolTable, operativerecord.ToolColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OperativerecordClient) Hooks() []Hook {
+	return c.hooks.Operativerecord
 }
 
 // PatientClient is a client for the Patient schema.
@@ -2426,4 +2815,103 @@ func (c *SchemeTypeClient) QuerySchemeTypeCoveredPerson(st *SchemeType) *Covered
 // Hooks returns the client hooks.
 func (c *SchemeTypeClient) Hooks() []Hook {
 	return c.hooks.SchemeType
+}
+
+// ToolClient is a client for the Tool schema.
+type ToolClient struct {
+	config
+}
+
+// NewToolClient returns a client for the Tool from the given config.
+func NewToolClient(c config) *ToolClient {
+	return &ToolClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tool.Hooks(f(g(h())))`.
+func (c *ToolClient) Use(hooks ...Hook) {
+	c.hooks.Tool = append(c.hooks.Tool, hooks...)
+}
+
+// Create returns a create builder for Tool.
+func (c *ToolClient) Create() *ToolCreate {
+	mutation := newToolMutation(c.config, OpCreate)
+	return &ToolCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Update returns an update builder for Tool.
+func (c *ToolClient) Update() *ToolUpdate {
+	mutation := newToolMutation(c.config, OpUpdate)
+	return &ToolUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ToolClient) UpdateOne(t *Tool) *ToolUpdateOne {
+	mutation := newToolMutation(c.config, OpUpdateOne, withTool(t))
+	return &ToolUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ToolClient) UpdateOneID(id int) *ToolUpdateOne {
+	mutation := newToolMutation(c.config, OpUpdateOne, withToolID(id))
+	return &ToolUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Tool.
+func (c *ToolClient) Delete() *ToolDelete {
+	mutation := newToolMutation(c.config, OpDelete)
+	return &ToolDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ToolClient) DeleteOne(t *Tool) *ToolDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ToolClient) DeleteOneID(id int) *ToolDeleteOne {
+	builder := c.Delete().Where(tool.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ToolDeleteOne{builder}
+}
+
+// Create returns a query builder for Tool.
+func (c *ToolClient) Query() *ToolQuery {
+	return &ToolQuery{config: c.config}
+}
+
+// Get returns a Tool entity by its id.
+func (c *ToolClient) Get(ctx context.Context, id int) (*Tool, error) {
+	return c.Query().Where(tool.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ToolClient) GetX(ctx context.Context, id int) *Tool {
+	t, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+// QueryToolOperativerecord queries the Tool_Operativerecord edge of a Tool.
+func (c *ToolClient) QueryToolOperativerecord(t *Tool) *OperativerecordQuery {
+	query := &OperativerecordQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tool.Table, tool.FieldID, id),
+			sqlgraph.To(operativerecord.Table, operativerecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tool.ToolOperativerecordTable, tool.ToolOperativerecordColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ToolClient) Hooks() []Hook {
+	return c.hooks.Tool
 }

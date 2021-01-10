@@ -11,10 +11,13 @@ import (
 	"github.com/dhetporn/team08/ent/disease"
 	"github.com/dhetporn/team08/ent/doctor"
 	"github.com/dhetporn/team08/ent/drug"
+	"github.com/dhetporn/team08/ent/examinationroom"
 	"github.com/dhetporn/team08/ent/fund"
 	"github.com/dhetporn/team08/ent/gender"
 	"github.com/dhetporn/team08/ent/medical"
 	"github.com/dhetporn/team08/ent/nurse"
+	"github.com/dhetporn/team08/ent/operative"
+	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/prefix"
 	"github.com/dhetporn/team08/ent/prescription"
@@ -22,6 +25,7 @@ import (
 	"github.com/dhetporn/team08/ent/roomtype"
 	"github.com/dhetporn/team08/ent/schema"
 	"github.com/dhetporn/team08/ent/schemetype"
+	"github.com/dhetporn/team08/ent/tool"
 )
 
 // The init function reads all schema descriptors with runtime
@@ -76,6 +80,12 @@ func init() {
 	drugDescDrugName := drugFields[0].Descriptor()
 	// drug.DrugNameValidator is a validator for the "Drug_Name" field. It is called by the builders before save.
 	drug.DrugNameValidator = drugDescDrugName.Validators[0].(func(string) error)
+	examinationroomFields := schema.Examinationroom{}.Fields()
+	_ = examinationroomFields
+	// examinationroomDescExaminationroomName is the schema descriptor for examinationroom_name field.
+	examinationroomDescExaminationroomName := examinationroomFields[0].Descriptor()
+	// examinationroom.ExaminationroomNameValidator is a validator for the "examinationroom_name" field. It is called by the builders before save.
+	examinationroom.ExaminationroomNameValidator = examinationroomDescExaminationroomName.Validators[0].(func(string) error)
 	fundFields := schema.Fund{}.Fields()
 	_ = fundFields
 	// fundDescFundName is the schema descriptor for Fund_Name field.
@@ -124,6 +134,18 @@ func init() {
 	nurseDescNurseTel := nurseFields[3].Descriptor()
 	// nurse.NurseTelValidator is a validator for the "nurse_tel" field. It is called by the builders before save.
 	nurse.NurseTelValidator = nurseDescNurseTel.Validators[0].(func(string) error)
+	operativeFields := schema.Operative{}.Fields()
+	_ = operativeFields
+	// operativeDescOperativeName is the schema descriptor for operative_Name field.
+	operativeDescOperativeName := operativeFields[0].Descriptor()
+	// operative.OperativeNameValidator is a validator for the "operative_Name" field. It is called by the builders before save.
+	operative.OperativeNameValidator = operativeDescOperativeName.Validators[0].(func(string) error)
+	operativerecordFields := schema.Operativerecord{}.Fields()
+	_ = operativerecordFields
+	// operativerecordDescOperativeTime is the schema descriptor for OperativeTime field.
+	operativerecordDescOperativeTime := operativerecordFields[0].Descriptor()
+	// operativerecord.DefaultOperativeTime holds the default value on creation for the OperativeTime field.
+	operativerecord.DefaultOperativeTime = operativerecordDescOperativeTime.Default.(func() time.Time)
 	patientFields := schema.Patient{}.Fields()
 	_ = patientFields
 	// patientDescPatientName is the schema descriptor for Patient_name field.
@@ -188,4 +210,10 @@ func init() {
 	schemetypeDescSchemeTypeName := schemetypeFields[0].Descriptor()
 	// schemetype.SchemeTypeNameValidator is a validator for the "SchemeType_Name" field. It is called by the builders before save.
 	schemetype.SchemeTypeNameValidator = schemetypeDescSchemeTypeName.Validators[0].(func(string) error)
+	toolFields := schema.Tool{}.Fields()
+	_ = toolFields
+	// toolDescToolName is the schema descriptor for Tool_Name field.
+	toolDescToolName := toolFields[0].Descriptor()
+	// tool.ToolNameValidator is a validator for the "Tool_Name" field. It is called by the builders before save.
+	tool.ToolNameValidator = toolDescToolName.Validators[0].(func(string) error)
 }

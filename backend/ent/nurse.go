@@ -34,9 +34,11 @@ type NurseEdges struct {
 	Fromnurse []*Rent
 	// NursePrescription holds the value of the nurse_prescription edge.
 	NursePrescription []*Prescription
+	// NurseOperativerecord holds the value of the Nurse_Operativerecord edge.
+	NurseOperativerecord []*Operativerecord
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // FromnurseOrErr returns the Fromnurse value or an error if the edge
@@ -55,6 +57,15 @@ func (e NurseEdges) NursePrescriptionOrErr() ([]*Prescription, error) {
 		return e.NursePrescription, nil
 	}
 	return nil, &NotLoadedError{edge: "nurse_prescription"}
+}
+
+// NurseOperativerecordOrErr returns the NurseOperativerecord value or an error if the edge
+// was not loaded in eager-loading.
+func (e NurseEdges) NurseOperativerecordOrErr() ([]*Operativerecord, error) {
+	if e.loadedTypes[2] {
+		return e.NurseOperativerecord, nil
+	}
+	return nil, &NotLoadedError{edge: "Nurse_Operativerecord"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -111,6 +122,11 @@ func (n *Nurse) QueryFromnurse() *RentQuery {
 // QueryNursePrescription queries the nurse_prescription edge of the Nurse.
 func (n *Nurse) QueryNursePrescription() *PrescriptionQuery {
 	return (&NurseClient{config: n.config}).QueryNursePrescription(n)
+}
+
+// QueryNurseOperativerecord queries the Nurse_Operativerecord edge of the Nurse.
+func (n *Nurse) QueryNurseOperativerecord() *OperativerecordQuery {
+	return (&NurseClient{config: n.config}).QueryNurseOperativerecord(n)
 }
 
 // Update returns a builder for updating this Nurse.

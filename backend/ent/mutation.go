@@ -16,10 +16,13 @@ import (
 	"github.com/dhetporn/team08/ent/disease"
 	"github.com/dhetporn/team08/ent/doctor"
 	"github.com/dhetporn/team08/ent/drug"
+	"github.com/dhetporn/team08/ent/examinationroom"
 	"github.com/dhetporn/team08/ent/fund"
 	"github.com/dhetporn/team08/ent/gender"
 	"github.com/dhetporn/team08/ent/medical"
 	"github.com/dhetporn/team08/ent/nurse"
+	"github.com/dhetporn/team08/ent/operative"
+	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/dhetporn/team08/ent/patient"
 	"github.com/dhetporn/team08/ent/prefix"
 	"github.com/dhetporn/team08/ent/prescription"
@@ -27,6 +30,7 @@ import (
 	"github.com/dhetporn/team08/ent/room"
 	"github.com/dhetporn/team08/ent/roomtype"
 	"github.com/dhetporn/team08/ent/schemetype"
+	"github.com/dhetporn/team08/ent/tool"
 
 	"github.com/facebookincubator/ent"
 )
@@ -40,25 +44,29 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeBloodtype     = "Bloodtype"
-	TypeCertificate   = "Certificate"
-	TypeCoveredPerson = "CoveredPerson"
-	TypeDepartment    = "Department"
-	TypeDiagnose      = "Diagnose"
-	TypeDisease       = "Disease"
-	TypeDoctor        = "Doctor"
-	TypeDrug          = "Drug"
-	TypeFund          = "Fund"
-	TypeGender        = "Gender"
-	TypeMedical       = "Medical"
-	TypeNurse         = "Nurse"
-	TypePatient       = "Patient"
-	TypePrefix        = "Prefix"
-	TypePrescription  = "Prescription"
-	TypeRent          = "Rent"
-	TypeRoom          = "Room"
-	TypeRoomtype      = "Roomtype"
-	TypeSchemeType    = "SchemeType"
+	TypeBloodtype       = "Bloodtype"
+	TypeCertificate     = "Certificate"
+	TypeCoveredPerson   = "CoveredPerson"
+	TypeDepartment      = "Department"
+	TypeDiagnose        = "Diagnose"
+	TypeDisease         = "Disease"
+	TypeDoctor          = "Doctor"
+	TypeDrug            = "Drug"
+	TypeExaminationroom = "Examinationroom"
+	TypeFund            = "Fund"
+	TypeGender          = "Gender"
+	TypeMedical         = "Medical"
+	TypeNurse           = "Nurse"
+	TypeOperative       = "Operative"
+	TypeOperativerecord = "Operativerecord"
+	TypePatient         = "Patient"
+	TypePrefix          = "Prefix"
+	TypePrescription    = "Prescription"
+	TypeRent            = "Rent"
+	TypeRoom            = "Room"
+	TypeRoomtype        = "Roomtype"
+	TypeSchemeType      = "SchemeType"
+	TypeTool            = "Tool"
 )
 
 // BloodtypeMutation represents an operation that mutate the Bloodtypes
@@ -3451,6 +3459,374 @@ func (m *DrugMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Drug edge %s", name)
 }
 
+// ExaminationroomMutation represents an operation that mutate the Examinationrooms
+// nodes in the graph.
+type ExaminationroomMutation struct {
+	config
+	op                                      Op
+	typ                                     string
+	id                                      *int
+	examinationroom_name                    *string
+	clearedFields                           map[string]struct{}
+	_Examinationroom_Operativerecord        map[int]struct{}
+	removed_Examinationroom_Operativerecord map[int]struct{}
+	done                                    bool
+	oldValue                                func(context.Context) (*Examinationroom, error)
+}
+
+var _ ent.Mutation = (*ExaminationroomMutation)(nil)
+
+// examinationroomOption allows to manage the mutation configuration using functional options.
+type examinationroomOption func(*ExaminationroomMutation)
+
+// newExaminationroomMutation creates new mutation for $n.Name.
+func newExaminationroomMutation(c config, op Op, opts ...examinationroomOption) *ExaminationroomMutation {
+	m := &ExaminationroomMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeExaminationroom,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withExaminationroomID sets the id field of the mutation.
+func withExaminationroomID(id int) examinationroomOption {
+	return func(m *ExaminationroomMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Examinationroom
+		)
+		m.oldValue = func(ctx context.Context) (*Examinationroom, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Examinationroom.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withExaminationroom sets the old Examinationroom of the mutation.
+func withExaminationroom(node *Examinationroom) examinationroomOption {
+	return func(m *ExaminationroomMutation) {
+		m.oldValue = func(context.Context) (*Examinationroom, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ExaminationroomMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ExaminationroomMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the id value in the mutation. Note that, the id
+// is available only if it was provided to the builder.
+func (m *ExaminationroomMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetExaminationroomName sets the examinationroom_name field.
+func (m *ExaminationroomMutation) SetExaminationroomName(s string) {
+	m.examinationroom_name = &s
+}
+
+// ExaminationroomName returns the examinationroom_name value in the mutation.
+func (m *ExaminationroomMutation) ExaminationroomName() (r string, exists bool) {
+	v := m.examinationroom_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExaminationroomName returns the old examinationroom_name value of the Examinationroom.
+// If the Examinationroom object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *ExaminationroomMutation) OldExaminationroomName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldExaminationroomName is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldExaminationroomName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExaminationroomName: %w", err)
+	}
+	return oldValue.ExaminationroomName, nil
+}
+
+// ResetExaminationroomName reset all changes of the "examinationroom_name" field.
+func (m *ExaminationroomMutation) ResetExaminationroomName() {
+	m.examinationroom_name = nil
+}
+
+// AddExaminationroomOperativerecordIDs adds the Examinationroom_Operativerecord edge to Operativerecord by ids.
+func (m *ExaminationroomMutation) AddExaminationroomOperativerecordIDs(ids ...int) {
+	if m._Examinationroom_Operativerecord == nil {
+		m._Examinationroom_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m._Examinationroom_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveExaminationroomOperativerecordIDs removes the Examinationroom_Operativerecord edge to Operativerecord by ids.
+func (m *ExaminationroomMutation) RemoveExaminationroomOperativerecordIDs(ids ...int) {
+	if m.removed_Examinationroom_Operativerecord == nil {
+		m.removed_Examinationroom_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removed_Examinationroom_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedExaminationroomOperativerecord returns the removed ids of Examinationroom_Operativerecord.
+func (m *ExaminationroomMutation) RemovedExaminationroomOperativerecordIDs() (ids []int) {
+	for id := range m.removed_Examinationroom_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ExaminationroomOperativerecordIDs returns the Examinationroom_Operativerecord ids in the mutation.
+func (m *ExaminationroomMutation) ExaminationroomOperativerecordIDs() (ids []int) {
+	for id := range m._Examinationroom_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetExaminationroomOperativerecord reset all changes of the "Examinationroom_Operativerecord" edge.
+func (m *ExaminationroomMutation) ResetExaminationroomOperativerecord() {
+	m._Examinationroom_Operativerecord = nil
+	m.removed_Examinationroom_Operativerecord = nil
+}
+
+// Op returns the operation name.
+func (m *ExaminationroomMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Examinationroom).
+func (m *ExaminationroomMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during
+// this mutation. Note that, in order to get all numeric
+// fields that were in/decremented, call AddedFields().
+func (m *ExaminationroomMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.examinationroom_name != nil {
+		fields = append(fields, examinationroom.FieldExaminationroomName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name.
+// The second boolean value indicates that this field was
+// not set, or was not define in the schema.
+func (m *ExaminationroomMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case examinationroom.FieldExaminationroomName:
+		return m.ExaminationroomName()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database.
+// An error is returned if the mutation operation is not UpdateOne,
+// or the query to the database was failed.
+func (m *ExaminationroomMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case examinationroom.FieldExaminationroomName:
+		return m.OldExaminationroomName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Examinationroom field %s", name)
+}
+
+// SetField sets the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *ExaminationroomMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case examinationroom.FieldExaminationroomName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExaminationroomName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Examinationroom field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented
+// or decremented during this mutation.
+func (m *ExaminationroomMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was in/decremented
+// from a field with the given name. The second value indicates
+// that this field was not set, or was not define in the schema.
+func (m *ExaminationroomMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *ExaminationroomMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Examinationroom numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared
+// during this mutation.
+func (m *ExaminationroomMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicates if this field was
+// cleared in this mutation.
+func (m *ExaminationroomMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value for the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ExaminationroomMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Examinationroom nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation regarding the
+// given field name. It returns an error if the field is not
+// defined in the schema.
+func (m *ExaminationroomMutation) ResetField(name string) error {
+	switch name {
+	case examinationroom.FieldExaminationroomName:
+		m.ResetExaminationroomName()
+		return nil
+	}
+	return fmt.Errorf("unknown Examinationroom field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this
+// mutation.
+func (m *ExaminationroomMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m._Examinationroom_Operativerecord != nil {
+		edges = append(edges, examinationroom.EdgeExaminationroomOperativerecord)
+	}
+	return edges
+}
+
+// AddedIDs returns all ids (to other nodes) that were added for
+// the given edge name.
+func (m *ExaminationroomMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case examinationroom.EdgeExaminationroomOperativerecord:
+		ids := make([]ent.Value, 0, len(m._Examinationroom_Operativerecord))
+		for id := range m._Examinationroom_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this
+// mutation.
+func (m *ExaminationroomMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removed_Examinationroom_Operativerecord != nil {
+		edges = append(edges, examinationroom.EdgeExaminationroomOperativerecord)
+	}
+	return edges
+}
+
+// RemovedIDs returns all ids (to other nodes) that were removed for
+// the given edge name.
+func (m *ExaminationroomMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case examinationroom.EdgeExaminationroomOperativerecord:
+		ids := make([]ent.Value, 0, len(m.removed_Examinationroom_Operativerecord))
+		for id := range m.removed_Examinationroom_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this
+// mutation.
+func (m *ExaminationroomMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// EdgeCleared returns a boolean indicates if this edge was
+// cleared in this mutation.
+func (m *ExaminationroomMutation) EdgeCleared(name string) bool {
+	switch name {
+	}
+	return false
+}
+
+// ClearEdge clears the value for the given name. It returns an
+// error if the edge name is not defined in the schema.
+func (m *ExaminationroomMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Examinationroom unique edge %s", name)
+}
+
+// ResetEdge resets all changes in the mutation regarding the
+// given edge name. It returns an error if the edge is not
+// defined in the schema.
+func (m *ExaminationroomMutation) ResetEdge(name string) error {
+	switch name {
+	case examinationroom.EdgeExaminationroomOperativerecord:
+		m.ResetExaminationroomOperativerecord()
+		return nil
+	}
+	return fmt.Errorf("unknown Examinationroom edge %s", name)
+}
+
 // FundMutation represents an operation that mutate the Funds
 // nodes in the graph.
 type FundMutation struct {
@@ -4649,20 +5025,22 @@ func (m *MedicalMutation) ResetEdge(name string) error {
 // nodes in the graph.
 type NurseMutation struct {
 	config
-	op                        Op
-	typ                       string
-	id                        *int
-	nurse_name                *string
-	nurse_email               *string
-	nurse_password            *string
-	nurse_tel                 *string
-	clearedFields             map[string]struct{}
-	fromnurse                 map[int]struct{}
-	removedfromnurse          map[int]struct{}
-	nurse_prescription        map[int]struct{}
-	removednurse_prescription map[int]struct{}
-	done                      bool
-	oldValue                  func(context.Context) (*Nurse, error)
+	op                            Op
+	typ                           string
+	id                            *int
+	nurse_name                    *string
+	nurse_email                   *string
+	nurse_password                *string
+	nurse_tel                     *string
+	clearedFields                 map[string]struct{}
+	fromnurse                     map[int]struct{}
+	removedfromnurse              map[int]struct{}
+	nurse_prescription            map[int]struct{}
+	removednurse_prescription     map[int]struct{}
+	_Nurse_Operativerecord        map[int]struct{}
+	removed_Nurse_Operativerecord map[int]struct{}
+	done                          bool
+	oldValue                      func(context.Context) (*Nurse, error)
 }
 
 var _ ent.Mutation = (*NurseMutation)(nil)
@@ -4976,6 +5354,48 @@ func (m *NurseMutation) ResetNursePrescription() {
 	m.removednurse_prescription = nil
 }
 
+// AddNurseOperativerecordIDs adds the Nurse_Operativerecord edge to Operativerecord by ids.
+func (m *NurseMutation) AddNurseOperativerecordIDs(ids ...int) {
+	if m._Nurse_Operativerecord == nil {
+		m._Nurse_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m._Nurse_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveNurseOperativerecordIDs removes the Nurse_Operativerecord edge to Operativerecord by ids.
+func (m *NurseMutation) RemoveNurseOperativerecordIDs(ids ...int) {
+	if m.removed_Nurse_Operativerecord == nil {
+		m.removed_Nurse_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removed_Nurse_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNurseOperativerecord returns the removed ids of Nurse_Operativerecord.
+func (m *NurseMutation) RemovedNurseOperativerecordIDs() (ids []int) {
+	for id := range m.removed_Nurse_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NurseOperativerecordIDs returns the Nurse_Operativerecord ids in the mutation.
+func (m *NurseMutation) NurseOperativerecordIDs() (ids []int) {
+	for id := range m._Nurse_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNurseOperativerecord reset all changes of the "Nurse_Operativerecord" edge.
+func (m *NurseMutation) ResetNurseOperativerecord() {
+	m._Nurse_Operativerecord = nil
+	m.removed_Nurse_Operativerecord = nil
+}
+
 // Op returns the operation name.
 func (m *NurseMutation) Op() Op {
 	return m.op
@@ -5142,12 +5562,15 @@ func (m *NurseMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this
 // mutation.
 func (m *NurseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.fromnurse != nil {
 		edges = append(edges, nurse.EdgeFromnurse)
 	}
 	if m.nurse_prescription != nil {
 		edges = append(edges, nurse.EdgeNursePrescription)
+	}
+	if m._Nurse_Operativerecord != nil {
+		edges = append(edges, nurse.EdgeNurseOperativerecord)
 	}
 	return edges
 }
@@ -5168,6 +5591,12 @@ func (m *NurseMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case nurse.EdgeNurseOperativerecord:
+		ids := make([]ent.Value, 0, len(m._Nurse_Operativerecord))
+		for id := range m._Nurse_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -5175,12 +5604,15 @@ func (m *NurseMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this
 // mutation.
 func (m *NurseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedfromnurse != nil {
 		edges = append(edges, nurse.EdgeFromnurse)
 	}
 	if m.removednurse_prescription != nil {
 		edges = append(edges, nurse.EdgeNursePrescription)
+	}
+	if m.removed_Nurse_Operativerecord != nil {
+		edges = append(edges, nurse.EdgeNurseOperativerecord)
 	}
 	return edges
 }
@@ -5201,6 +5633,12 @@ func (m *NurseMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case nurse.EdgeNurseOperativerecord:
+		ids := make([]ent.Value, 0, len(m.removed_Nurse_Operativerecord))
+		for id := range m.removed_Nurse_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -5208,7 +5646,7 @@ func (m *NurseMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this
 // mutation.
 func (m *NurseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -5239,8 +5677,918 @@ func (m *NurseMutation) ResetEdge(name string) error {
 	case nurse.EdgeNursePrescription:
 		m.ResetNursePrescription()
 		return nil
+	case nurse.EdgeNurseOperativerecord:
+		m.ResetNurseOperativerecord()
+		return nil
 	}
 	return fmt.Errorf("unknown Nurse edge %s", name)
+}
+
+// OperativeMutation represents an operation that mutate the Operatives
+// nodes in the graph.
+type OperativeMutation struct {
+	config
+	op                                Op
+	typ                               string
+	id                                *int
+	operative_Name                    *string
+	clearedFields                     map[string]struct{}
+	_Operative_Operativerecord        map[int]struct{}
+	removed_Operative_Operativerecord map[int]struct{}
+	done                              bool
+	oldValue                          func(context.Context) (*Operative, error)
+}
+
+var _ ent.Mutation = (*OperativeMutation)(nil)
+
+// operativeOption allows to manage the mutation configuration using functional options.
+type operativeOption func(*OperativeMutation)
+
+// newOperativeMutation creates new mutation for $n.Name.
+func newOperativeMutation(c config, op Op, opts ...operativeOption) *OperativeMutation {
+	m := &OperativeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeOperative,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withOperativeID sets the id field of the mutation.
+func withOperativeID(id int) operativeOption {
+	return func(m *OperativeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Operative
+		)
+		m.oldValue = func(ctx context.Context) (*Operative, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Operative.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withOperative sets the old Operative of the mutation.
+func withOperative(node *Operative) operativeOption {
+	return func(m *OperativeMutation) {
+		m.oldValue = func(context.Context) (*Operative, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m OperativeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m OperativeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the id value in the mutation. Note that, the id
+// is available only if it was provided to the builder.
+func (m *OperativeMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetOperativeName sets the operative_Name field.
+func (m *OperativeMutation) SetOperativeName(s string) {
+	m.operative_Name = &s
+}
+
+// OperativeName returns the operative_Name value in the mutation.
+func (m *OperativeMutation) OperativeName() (r string, exists bool) {
+	v := m.operative_Name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOperativeName returns the old operative_Name value of the Operative.
+// If the Operative object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *OperativeMutation) OldOperativeName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldOperativeName is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldOperativeName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOperativeName: %w", err)
+	}
+	return oldValue.OperativeName, nil
+}
+
+// ResetOperativeName reset all changes of the "operative_Name" field.
+func (m *OperativeMutation) ResetOperativeName() {
+	m.operative_Name = nil
+}
+
+// AddOperativeOperativerecordIDs adds the Operative_Operativerecord edge to Operativerecord by ids.
+func (m *OperativeMutation) AddOperativeOperativerecordIDs(ids ...int) {
+	if m._Operative_Operativerecord == nil {
+		m._Operative_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m._Operative_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveOperativeOperativerecordIDs removes the Operative_Operativerecord edge to Operativerecord by ids.
+func (m *OperativeMutation) RemoveOperativeOperativerecordIDs(ids ...int) {
+	if m.removed_Operative_Operativerecord == nil {
+		m.removed_Operative_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removed_Operative_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOperativeOperativerecord returns the removed ids of Operative_Operativerecord.
+func (m *OperativeMutation) RemovedOperativeOperativerecordIDs() (ids []int) {
+	for id := range m.removed_Operative_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// OperativeOperativerecordIDs returns the Operative_Operativerecord ids in the mutation.
+func (m *OperativeMutation) OperativeOperativerecordIDs() (ids []int) {
+	for id := range m._Operative_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetOperativeOperativerecord reset all changes of the "Operative_Operativerecord" edge.
+func (m *OperativeMutation) ResetOperativeOperativerecord() {
+	m._Operative_Operativerecord = nil
+	m.removed_Operative_Operativerecord = nil
+}
+
+// Op returns the operation name.
+func (m *OperativeMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Operative).
+func (m *OperativeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during
+// this mutation. Note that, in order to get all numeric
+// fields that were in/decremented, call AddedFields().
+func (m *OperativeMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.operative_Name != nil {
+		fields = append(fields, operative.FieldOperativeName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name.
+// The second boolean value indicates that this field was
+// not set, or was not define in the schema.
+func (m *OperativeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case operative.FieldOperativeName:
+		return m.OperativeName()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database.
+// An error is returned if the mutation operation is not UpdateOne,
+// or the query to the database was failed.
+func (m *OperativeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case operative.FieldOperativeName:
+		return m.OldOperativeName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Operative field %s", name)
+}
+
+// SetField sets the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *OperativeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case operative.FieldOperativeName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOperativeName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Operative field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented
+// or decremented during this mutation.
+func (m *OperativeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was in/decremented
+// from a field with the given name. The second value indicates
+// that this field was not set, or was not define in the schema.
+func (m *OperativeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *OperativeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Operative numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared
+// during this mutation.
+func (m *OperativeMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicates if this field was
+// cleared in this mutation.
+func (m *OperativeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value for the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *OperativeMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Operative nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation regarding the
+// given field name. It returns an error if the field is not
+// defined in the schema.
+func (m *OperativeMutation) ResetField(name string) error {
+	switch name {
+	case operative.FieldOperativeName:
+		m.ResetOperativeName()
+		return nil
+	}
+	return fmt.Errorf("unknown Operative field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this
+// mutation.
+func (m *OperativeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m._Operative_Operativerecord != nil {
+		edges = append(edges, operative.EdgeOperativeOperativerecord)
+	}
+	return edges
+}
+
+// AddedIDs returns all ids (to other nodes) that were added for
+// the given edge name.
+func (m *OperativeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case operative.EdgeOperativeOperativerecord:
+		ids := make([]ent.Value, 0, len(m._Operative_Operativerecord))
+		for id := range m._Operative_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this
+// mutation.
+func (m *OperativeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removed_Operative_Operativerecord != nil {
+		edges = append(edges, operative.EdgeOperativeOperativerecord)
+	}
+	return edges
+}
+
+// RemovedIDs returns all ids (to other nodes) that were removed for
+// the given edge name.
+func (m *OperativeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case operative.EdgeOperativeOperativerecord:
+		ids := make([]ent.Value, 0, len(m.removed_Operative_Operativerecord))
+		for id := range m.removed_Operative_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this
+// mutation.
+func (m *OperativeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// EdgeCleared returns a boolean indicates if this edge was
+// cleared in this mutation.
+func (m *OperativeMutation) EdgeCleared(name string) bool {
+	switch name {
+	}
+	return false
+}
+
+// ClearEdge clears the value for the given name. It returns an
+// error if the edge name is not defined in the schema.
+func (m *OperativeMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Operative unique edge %s", name)
+}
+
+// ResetEdge resets all changes in the mutation regarding the
+// given edge name. It returns an error if the edge is not
+// defined in the schema.
+func (m *OperativeMutation) ResetEdge(name string) error {
+	switch name {
+	case operative.EdgeOperativeOperativerecord:
+		m.ResetOperativeOperativerecord()
+		return nil
+	}
+	return fmt.Errorf("unknown Operative edge %s", name)
+}
+
+// OperativerecordMutation represents an operation that mutate the Operativerecords
+// nodes in the graph.
+type OperativerecordMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *int
+	_OperativeTime          *time.Time
+	clearedFields           map[string]struct{}
+	_Examinationroom        *int
+	cleared_Examinationroom bool
+	_Nurse                  *int
+	cleared_Nurse           bool
+	_Operative              *int
+	cleared_Operative       bool
+	_Tool                   *int
+	cleared_Tool            bool
+	done                    bool
+	oldValue                func(context.Context) (*Operativerecord, error)
+}
+
+var _ ent.Mutation = (*OperativerecordMutation)(nil)
+
+// operativerecordOption allows to manage the mutation configuration using functional options.
+type operativerecordOption func(*OperativerecordMutation)
+
+// newOperativerecordMutation creates new mutation for $n.Name.
+func newOperativerecordMutation(c config, op Op, opts ...operativerecordOption) *OperativerecordMutation {
+	m := &OperativerecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeOperativerecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withOperativerecordID sets the id field of the mutation.
+func withOperativerecordID(id int) operativerecordOption {
+	return func(m *OperativerecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Operativerecord
+		)
+		m.oldValue = func(ctx context.Context) (*Operativerecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Operativerecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withOperativerecord sets the old Operativerecord of the mutation.
+func withOperativerecord(node *Operativerecord) operativerecordOption {
+	return func(m *OperativerecordMutation) {
+		m.oldValue = func(context.Context) (*Operativerecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m OperativerecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m OperativerecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the id value in the mutation. Note that, the id
+// is available only if it was provided to the builder.
+func (m *OperativerecordMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetOperativeTime sets the OperativeTime field.
+func (m *OperativerecordMutation) SetOperativeTime(t time.Time) {
+	m._OperativeTime = &t
+}
+
+// OperativeTime returns the OperativeTime value in the mutation.
+func (m *OperativerecordMutation) OperativeTime() (r time.Time, exists bool) {
+	v := m._OperativeTime
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOperativeTime returns the old OperativeTime value of the Operativerecord.
+// If the Operativerecord object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *OperativerecordMutation) OldOperativeTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldOperativeTime is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldOperativeTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOperativeTime: %w", err)
+	}
+	return oldValue.OperativeTime, nil
+}
+
+// ResetOperativeTime reset all changes of the "OperativeTime" field.
+func (m *OperativerecordMutation) ResetOperativeTime() {
+	m._OperativeTime = nil
+}
+
+// SetExaminationroomID sets the Examinationroom edge to Examinationroom by id.
+func (m *OperativerecordMutation) SetExaminationroomID(id int) {
+	m._Examinationroom = &id
+}
+
+// ClearExaminationroom clears the Examinationroom edge to Examinationroom.
+func (m *OperativerecordMutation) ClearExaminationroom() {
+	m.cleared_Examinationroom = true
+}
+
+// ExaminationroomCleared returns if the edge Examinationroom was cleared.
+func (m *OperativerecordMutation) ExaminationroomCleared() bool {
+	return m.cleared_Examinationroom
+}
+
+// ExaminationroomID returns the Examinationroom id in the mutation.
+func (m *OperativerecordMutation) ExaminationroomID() (id int, exists bool) {
+	if m._Examinationroom != nil {
+		return *m._Examinationroom, true
+	}
+	return
+}
+
+// ExaminationroomIDs returns the Examinationroom ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// ExaminationroomID instead. It exists only for internal usage by the builders.
+func (m *OperativerecordMutation) ExaminationroomIDs() (ids []int) {
+	if id := m._Examinationroom; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetExaminationroom reset all changes of the "Examinationroom" edge.
+func (m *OperativerecordMutation) ResetExaminationroom() {
+	m._Examinationroom = nil
+	m.cleared_Examinationroom = false
+}
+
+// SetNurseID sets the Nurse edge to Nurse by id.
+func (m *OperativerecordMutation) SetNurseID(id int) {
+	m._Nurse = &id
+}
+
+// ClearNurse clears the Nurse edge to Nurse.
+func (m *OperativerecordMutation) ClearNurse() {
+	m.cleared_Nurse = true
+}
+
+// NurseCleared returns if the edge Nurse was cleared.
+func (m *OperativerecordMutation) NurseCleared() bool {
+	return m.cleared_Nurse
+}
+
+// NurseID returns the Nurse id in the mutation.
+func (m *OperativerecordMutation) NurseID() (id int, exists bool) {
+	if m._Nurse != nil {
+		return *m._Nurse, true
+	}
+	return
+}
+
+// NurseIDs returns the Nurse ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// NurseID instead. It exists only for internal usage by the builders.
+func (m *OperativerecordMutation) NurseIDs() (ids []int) {
+	if id := m._Nurse; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetNurse reset all changes of the "Nurse" edge.
+func (m *OperativerecordMutation) ResetNurse() {
+	m._Nurse = nil
+	m.cleared_Nurse = false
+}
+
+// SetOperativeID sets the Operative edge to Operative by id.
+func (m *OperativerecordMutation) SetOperativeID(id int) {
+	m._Operative = &id
+}
+
+// ClearOperative clears the Operative edge to Operative.
+func (m *OperativerecordMutation) ClearOperative() {
+	m.cleared_Operative = true
+}
+
+// OperativeCleared returns if the edge Operative was cleared.
+func (m *OperativerecordMutation) OperativeCleared() bool {
+	return m.cleared_Operative
+}
+
+// OperativeID returns the Operative id in the mutation.
+func (m *OperativerecordMutation) OperativeID() (id int, exists bool) {
+	if m._Operative != nil {
+		return *m._Operative, true
+	}
+	return
+}
+
+// OperativeIDs returns the Operative ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// OperativeID instead. It exists only for internal usage by the builders.
+func (m *OperativerecordMutation) OperativeIDs() (ids []int) {
+	if id := m._Operative; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetOperative reset all changes of the "Operative" edge.
+func (m *OperativerecordMutation) ResetOperative() {
+	m._Operative = nil
+	m.cleared_Operative = false
+}
+
+// SetToolID sets the Tool edge to Tool by id.
+func (m *OperativerecordMutation) SetToolID(id int) {
+	m._Tool = &id
+}
+
+// ClearTool clears the Tool edge to Tool.
+func (m *OperativerecordMutation) ClearTool() {
+	m.cleared_Tool = true
+}
+
+// ToolCleared returns if the edge Tool was cleared.
+func (m *OperativerecordMutation) ToolCleared() bool {
+	return m.cleared_Tool
+}
+
+// ToolID returns the Tool id in the mutation.
+func (m *OperativerecordMutation) ToolID() (id int, exists bool) {
+	if m._Tool != nil {
+		return *m._Tool, true
+	}
+	return
+}
+
+// ToolIDs returns the Tool ids in the mutation.
+// Note that ids always returns len(ids) <= 1 for unique edges, and you should use
+// ToolID instead. It exists only for internal usage by the builders.
+func (m *OperativerecordMutation) ToolIDs() (ids []int) {
+	if id := m._Tool; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTool reset all changes of the "Tool" edge.
+func (m *OperativerecordMutation) ResetTool() {
+	m._Tool = nil
+	m.cleared_Tool = false
+}
+
+// Op returns the operation name.
+func (m *OperativerecordMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Operativerecord).
+func (m *OperativerecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during
+// this mutation. Note that, in order to get all numeric
+// fields that were in/decremented, call AddedFields().
+func (m *OperativerecordMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m._OperativeTime != nil {
+		fields = append(fields, operativerecord.FieldOperativeTime)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name.
+// The second boolean value indicates that this field was
+// not set, or was not define in the schema.
+func (m *OperativerecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case operativerecord.FieldOperativeTime:
+		return m.OperativeTime()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database.
+// An error is returned if the mutation operation is not UpdateOne,
+// or the query to the database was failed.
+func (m *OperativerecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case operativerecord.FieldOperativeTime:
+		return m.OldOperativeTime(ctx)
+	}
+	return nil, fmt.Errorf("unknown Operativerecord field %s", name)
+}
+
+// SetField sets the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *OperativerecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case operativerecord.FieldOperativeTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOperativeTime(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Operativerecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented
+// or decremented during this mutation.
+func (m *OperativerecordMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was in/decremented
+// from a field with the given name. The second value indicates
+// that this field was not set, or was not define in the schema.
+func (m *OperativerecordMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *OperativerecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Operativerecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared
+// during this mutation.
+func (m *OperativerecordMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicates if this field was
+// cleared in this mutation.
+func (m *OperativerecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value for the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *OperativerecordMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Operativerecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation regarding the
+// given field name. It returns an error if the field is not
+// defined in the schema.
+func (m *OperativerecordMutation) ResetField(name string) error {
+	switch name {
+	case operativerecord.FieldOperativeTime:
+		m.ResetOperativeTime()
+		return nil
+	}
+	return fmt.Errorf("unknown Operativerecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this
+// mutation.
+func (m *OperativerecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m._Examinationroom != nil {
+		edges = append(edges, operativerecord.EdgeExaminationroom)
+	}
+	if m._Nurse != nil {
+		edges = append(edges, operativerecord.EdgeNurse)
+	}
+	if m._Operative != nil {
+		edges = append(edges, operativerecord.EdgeOperative)
+	}
+	if m._Tool != nil {
+		edges = append(edges, operativerecord.EdgeTool)
+	}
+	return edges
+}
+
+// AddedIDs returns all ids (to other nodes) that were added for
+// the given edge name.
+func (m *OperativerecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case operativerecord.EdgeExaminationroom:
+		if id := m._Examinationroom; id != nil {
+			return []ent.Value{*id}
+		}
+	case operativerecord.EdgeNurse:
+		if id := m._Nurse; id != nil {
+			return []ent.Value{*id}
+		}
+	case operativerecord.EdgeOperative:
+		if id := m._Operative; id != nil {
+			return []ent.Value{*id}
+		}
+	case operativerecord.EdgeTool:
+		if id := m._Tool; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this
+// mutation.
+func (m *OperativerecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all ids (to other nodes) that were removed for
+// the given edge name.
+func (m *OperativerecordMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this
+// mutation.
+func (m *OperativerecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.cleared_Examinationroom {
+		edges = append(edges, operativerecord.EdgeExaminationroom)
+	}
+	if m.cleared_Nurse {
+		edges = append(edges, operativerecord.EdgeNurse)
+	}
+	if m.cleared_Operative {
+		edges = append(edges, operativerecord.EdgeOperative)
+	}
+	if m.cleared_Tool {
+		edges = append(edges, operativerecord.EdgeTool)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean indicates if this edge was
+// cleared in this mutation.
+func (m *OperativerecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case operativerecord.EdgeExaminationroom:
+		return m.cleared_Examinationroom
+	case operativerecord.EdgeNurse:
+		return m.cleared_Nurse
+	case operativerecord.EdgeOperative:
+		return m.cleared_Operative
+	case operativerecord.EdgeTool:
+		return m.cleared_Tool
+	}
+	return false
+}
+
+// ClearEdge clears the value for the given name. It returns an
+// error if the edge name is not defined in the schema.
+func (m *OperativerecordMutation) ClearEdge(name string) error {
+	switch name {
+	case operativerecord.EdgeExaminationroom:
+		m.ClearExaminationroom()
+		return nil
+	case operativerecord.EdgeNurse:
+		m.ClearNurse()
+		return nil
+	case operativerecord.EdgeOperative:
+		m.ClearOperative()
+		return nil
+	case operativerecord.EdgeTool:
+		m.ClearTool()
+		return nil
+	}
+	return fmt.Errorf("unknown Operativerecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes in the mutation regarding the
+// given edge name. It returns an error if the edge is not
+// defined in the schema.
+func (m *OperativerecordMutation) ResetEdge(name string) error {
+	switch name {
+	case operativerecord.EdgeExaminationroom:
+		m.ResetExaminationroom()
+		return nil
+	case operativerecord.EdgeNurse:
+		m.ResetNurse()
+		return nil
+	case operativerecord.EdgeOperative:
+		m.ResetOperative()
+		return nil
+	case operativerecord.EdgeTool:
+		m.ResetTool()
+		return nil
+	}
+	return fmt.Errorf("unknown Operativerecord edge %s", name)
 }
 
 // PatientMutation represents an operation that mutate the Patients
@@ -9342,4 +10690,372 @@ func (m *SchemeTypeMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown SchemeType edge %s", name)
+}
+
+// ToolMutation represents an operation that mutate the Tools
+// nodes in the graph.
+type ToolMutation struct {
+	config
+	op                           Op
+	typ                          string
+	id                           *int
+	_Tool_Name                   *string
+	clearedFields                map[string]struct{}
+	_Tool_Operativerecord        map[int]struct{}
+	removed_Tool_Operativerecord map[int]struct{}
+	done                         bool
+	oldValue                     func(context.Context) (*Tool, error)
+}
+
+var _ ent.Mutation = (*ToolMutation)(nil)
+
+// toolOption allows to manage the mutation configuration using functional options.
+type toolOption func(*ToolMutation)
+
+// newToolMutation creates new mutation for $n.Name.
+func newToolMutation(c config, op Op, opts ...toolOption) *ToolMutation {
+	m := &ToolMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTool,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withToolID sets the id field of the mutation.
+func withToolID(id int) toolOption {
+	return func(m *ToolMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Tool
+		)
+		m.oldValue = func(ctx context.Context) (*Tool, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Tool.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTool sets the old Tool of the mutation.
+func withTool(node *Tool) toolOption {
+	return func(m *ToolMutation) {
+		m.oldValue = func(context.Context) (*Tool, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ToolMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ToolMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the id value in the mutation. Note that, the id
+// is available only if it was provided to the builder.
+func (m *ToolMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetToolName sets the Tool_Name field.
+func (m *ToolMutation) SetToolName(s string) {
+	m._Tool_Name = &s
+}
+
+// ToolName returns the Tool_Name value in the mutation.
+func (m *ToolMutation) ToolName() (r string, exists bool) {
+	v := m._Tool_Name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToolName returns the old Tool_Name value of the Tool.
+// If the Tool object wasn't provided to the builder, the object is fetched
+// from the database.
+// An error is returned if the mutation operation is not UpdateOne, or database query fails.
+func (m *ToolMutation) OldToolName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldToolName is allowed only on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldToolName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToolName: %w", err)
+	}
+	return oldValue.ToolName, nil
+}
+
+// ResetToolName reset all changes of the "Tool_Name" field.
+func (m *ToolMutation) ResetToolName() {
+	m._Tool_Name = nil
+}
+
+// AddToolOperativerecordIDs adds the Tool_Operativerecord edge to Operativerecord by ids.
+func (m *ToolMutation) AddToolOperativerecordIDs(ids ...int) {
+	if m._Tool_Operativerecord == nil {
+		m._Tool_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m._Tool_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemoveToolOperativerecordIDs removes the Tool_Operativerecord edge to Operativerecord by ids.
+func (m *ToolMutation) RemoveToolOperativerecordIDs(ids ...int) {
+	if m.removed_Tool_Operativerecord == nil {
+		m.removed_Tool_Operativerecord = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.removed_Tool_Operativerecord[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedToolOperativerecord returns the removed ids of Tool_Operativerecord.
+func (m *ToolMutation) RemovedToolOperativerecordIDs() (ids []int) {
+	for id := range m.removed_Tool_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ToolOperativerecordIDs returns the Tool_Operativerecord ids in the mutation.
+func (m *ToolMutation) ToolOperativerecordIDs() (ids []int) {
+	for id := range m._Tool_Operativerecord {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetToolOperativerecord reset all changes of the "Tool_Operativerecord" edge.
+func (m *ToolMutation) ResetToolOperativerecord() {
+	m._Tool_Operativerecord = nil
+	m.removed_Tool_Operativerecord = nil
+}
+
+// Op returns the operation name.
+func (m *ToolMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Tool).
+func (m *ToolMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during
+// this mutation. Note that, in order to get all numeric
+// fields that were in/decremented, call AddedFields().
+func (m *ToolMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m._Tool_Name != nil {
+		fields = append(fields, tool.FieldToolName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name.
+// The second boolean value indicates that this field was
+// not set, or was not define in the schema.
+func (m *ToolMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tool.FieldToolName:
+		return m.ToolName()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database.
+// An error is returned if the mutation operation is not UpdateOne,
+// or the query to the database was failed.
+func (m *ToolMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tool.FieldToolName:
+		return m.OldToolName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Tool field %s", name)
+}
+
+// SetField sets the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *ToolMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tool.FieldToolName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToolName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Tool field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented
+// or decremented during this mutation.
+func (m *ToolMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was in/decremented
+// from a field with the given name. The second value indicates
+// that this field was not set, or was not define in the schema.
+func (m *ToolMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value for the given name. It returns an
+// error if the field is not defined in the schema, or if the
+// type mismatch the field type.
+func (m *ToolMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Tool numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared
+// during this mutation.
+func (m *ToolMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicates if this field was
+// cleared in this mutation.
+func (m *ToolMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value for the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ToolMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Tool nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation regarding the
+// given field name. It returns an error if the field is not
+// defined in the schema.
+func (m *ToolMutation) ResetField(name string) error {
+	switch name {
+	case tool.FieldToolName:
+		m.ResetToolName()
+		return nil
+	}
+	return fmt.Errorf("unknown Tool field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this
+// mutation.
+func (m *ToolMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m._Tool_Operativerecord != nil {
+		edges = append(edges, tool.EdgeToolOperativerecord)
+	}
+	return edges
+}
+
+// AddedIDs returns all ids (to other nodes) that were added for
+// the given edge name.
+func (m *ToolMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case tool.EdgeToolOperativerecord:
+		ids := make([]ent.Value, 0, len(m._Tool_Operativerecord))
+		for id := range m._Tool_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this
+// mutation.
+func (m *ToolMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removed_Tool_Operativerecord != nil {
+		edges = append(edges, tool.EdgeToolOperativerecord)
+	}
+	return edges
+}
+
+// RemovedIDs returns all ids (to other nodes) that were removed for
+// the given edge name.
+func (m *ToolMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case tool.EdgeToolOperativerecord:
+		ids := make([]ent.Value, 0, len(m.removed_Tool_Operativerecord))
+		for id := range m.removed_Tool_Operativerecord {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this
+// mutation.
+func (m *ToolMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// EdgeCleared returns a boolean indicates if this edge was
+// cleared in this mutation.
+func (m *ToolMutation) EdgeCleared(name string) bool {
+	switch name {
+	}
+	return false
+}
+
+// ClearEdge clears the value for the given name. It returns an
+// error if the edge name is not defined in the schema.
+func (m *ToolMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Tool unique edge %s", name)
+}
+
+// ResetEdge resets all changes in the mutation regarding the
+// given edge name. It returns an error if the edge is not
+// defined in the schema.
+func (m *ToolMutation) ResetEdge(name string) error {
+	switch name {
+	case tool.EdgeToolOperativerecord:
+		m.ResetToolOperativerecord()
+		return nil
+	}
+	return fmt.Errorf("unknown Tool edge %s", name)
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/dhetporn/team08/ent/nurse"
+	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
@@ -73,6 +74,21 @@ func (nc *NurseCreate) AddNursePrescription(p ...*Prescription) *NurseCreate {
 		ids[i] = p[i].ID
 	}
 	return nc.AddNursePrescriptionIDs(ids...)
+}
+
+// AddNurseOperativerecordIDs adds the Nurse_Operativerecord edge to Operativerecord by ids.
+func (nc *NurseCreate) AddNurseOperativerecordIDs(ids ...int) *NurseCreate {
+	nc.mutation.AddNurseOperativerecordIDs(ids...)
+	return nc
+}
+
+// AddNurseOperativerecord adds the Nurse_Operativerecord edges to Operativerecord.
+func (nc *NurseCreate) AddNurseOperativerecord(o ...*Operativerecord) *NurseCreate {
+	ids := make([]int, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return nc.AddNurseOperativerecordIDs(ids...)
 }
 
 // Mutation returns the NurseMutation object of the builder.
@@ -236,6 +252,25 @@ func (nc *NurseCreate) createSpec() (*Nurse, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: prescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.NurseOperativerecordIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   nurse.NurseOperativerecordTable,
+			Columns: []string{nurse.NurseOperativerecordColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: operativerecord.FieldID,
 				},
 			},
 		}

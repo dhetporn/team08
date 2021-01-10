@@ -26,5 +26,6 @@ func (Nurse) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("fromnurse", Rent.Type).StorageKey(edge.Column("nurse_id")),
 		edge.To("nurse_prescription", Prescription.Type).StorageKey(edge.Column("nurse_id")),
+		edge.To("Nurse_Operativerecord", Operativerecord.Type).StorageKey(edge.Column("Nurse_id")),
 	}
 }
