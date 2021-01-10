@@ -76,7 +76,7 @@ const Login: FC<{}> = () => {
     getDoctor();
     getMedicals();
   }, []);
-  var  login_status = false
+
   var status = false
   const Toast = Swal.mixin({
     toast: true,
@@ -96,7 +96,6 @@ const Login: FC<{}> = () => {
         if (item2.nursePassword == password) {
           window.location.href = "http://localhost:3000/homenurse";
           status = true
-          login_status = true
         }
       }
     })
@@ -105,7 +104,6 @@ const Login: FC<{}> = () => {
         if (item2.doctorPassword == password) {
           window.location.href = "http://localhost:3000/homedoctor";
           status = true
-          login_status = true
         }
       }
     })
@@ -114,11 +112,10 @@ const Login: FC<{}> = () => {
         if (item2.medicalPassword == password) {
           window.location.href = "http://localhost:3000/homemedical";
           status = true
-          login_status = true
         }
       }
     })
-    if (status == false && login_status == false) {
+    if (status == false) {
       Toast.fire({
         icon: 'error',
         title: 'username หรือ password ไม่ถูกต้อง',
