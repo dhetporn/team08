@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/coveredperson"
-	"github.com/dhetporn/team08/ent/fund"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/coveredperson"
+	"github.com/sut63/team08/ent/fund"
 )
 
 // FundCreate is the builder for creating a Fund entity.

@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/ent/nurse"
+	"github.com/sut63/team08/ent"
+	"github.com/sut63/team08/ent/nurse"
 )
 
 // NurseController defines the struct for the nurse controller

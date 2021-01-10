@@ -8,15 +8,15 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/dhetporn/team08/ent/doctor"
-	"github.com/dhetporn/team08/ent/drug"
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/predicate"
-	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/doctor"
+	"github.com/sut63/team08/ent/drug"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/predicate"
+	"github.com/sut63/team08/ent/prescription"
 )
 
 // PrescriptionQuery is the builder for querying Prescription entities.

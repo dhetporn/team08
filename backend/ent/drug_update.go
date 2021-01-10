@@ -6,12 +6,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/drug"
-	"github.com/dhetporn/team08/ent/predicate"
-	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/drug"
+	"github.com/sut63/team08/ent/predicate"
+	"github.com/sut63/team08/ent/prescription"
 )
 
 // DrugUpdate is the builder for updating Drug entities.

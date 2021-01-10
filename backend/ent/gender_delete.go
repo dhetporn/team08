@@ -6,11 +6,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/gender"
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/gender"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // GenderDelete is the builder for deleting a Gender entity.

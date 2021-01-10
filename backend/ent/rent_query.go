@@ -8,14 +8,14 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/predicate"
-	"github.com/dhetporn/team08/ent/rent"
-	"github.com/dhetporn/team08/ent/room"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/predicate"
+	"github.com/sut63/team08/ent/rent"
+	"github.com/sut63/team08/ent/room"
 )
 
 // RentQuery is the builder for querying Rent entities.

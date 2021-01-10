@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dhetporn/team08/ent/doctor"
-	"github.com/dhetporn/team08/ent/drug"
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/prescription"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/doctor"
+	"github.com/sut63/team08/ent/drug"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/prescription"
 )
 
 // PrescriptionCreate is the builder for creating a Prescription entity.

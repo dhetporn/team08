@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/schemetype"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/schemetype"
 )
 
 // SchemeType is the model entity for the SchemeType schema.

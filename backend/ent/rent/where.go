@@ -5,9 +5,9 @@ package rent
 import (
 	"time"
 
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // ID filters vertices based on their identifier.

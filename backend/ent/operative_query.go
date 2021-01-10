@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/dhetporn/team08/ent/operative"
-	"github.com/dhetporn/team08/ent/operativerecord"
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/operative"
+	"github.com/sut63/team08/ent/operativerecord"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // OperativeQuery is the builder for querying Operative entities.

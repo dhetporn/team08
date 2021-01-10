@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/certificate"
-	"github.com/dhetporn/team08/ent/coveredperson"
-	"github.com/dhetporn/team08/ent/fund"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/schemetype"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/certificate"
+	"github.com/sut63/team08/ent/coveredperson"
+	"github.com/sut63/team08/ent/fund"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/schemetype"
 )
 
 // CoveredPerson is the model entity for the CoveredPerson schema.

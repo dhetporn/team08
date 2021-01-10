@@ -7,11 +7,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/rent"
-	"github.com/dhetporn/team08/ent/room"
-	"github.com/dhetporn/team08/ent/roomtype"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/rent"
+	"github.com/sut63/team08/ent/room"
+	"github.com/sut63/team08/ent/roomtype"
 )
 
 // RoomCreate is the builder for creating a Room entity.

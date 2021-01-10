@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/examinationroom"
-	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/examinationroom"
+	"github.com/sut63/team08/ent/operativerecord"
 )
 
 // ExaminationroomCreate is the builder for creating a Examinationroom entity.

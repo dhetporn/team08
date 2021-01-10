@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/bloodtype"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/bloodtype"
 )
 
 // Bloodtype is the model entity for the Bloodtype schema.

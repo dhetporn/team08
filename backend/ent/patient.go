@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/bloodtype"
-	"github.com/dhetporn/team08/ent/gender"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/prefix"
-	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/bloodtype"
+	"github.com/sut63/team08/ent/gender"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/prefix"
+	"github.com/sut63/team08/ent/rent"
 )
 
 // Patient is the model entity for the Patient schema.

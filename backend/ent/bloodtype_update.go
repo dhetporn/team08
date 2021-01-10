@@ -6,12 +6,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/bloodtype"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/bloodtype"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // BloodtypeUpdate is the builder for updating Bloodtype entities.

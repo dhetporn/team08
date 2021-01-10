@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/bloodtype"
-	"github.com/dhetporn/team08/ent/patient"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/bloodtype"
+	"github.com/sut63/team08/ent/patient"
 )
 
 // BloodtypeCreate is the builder for creating a Bloodtype entity.

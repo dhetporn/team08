@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent"
+	"github.com/sut63/team08/ent"
 )
 
 var (

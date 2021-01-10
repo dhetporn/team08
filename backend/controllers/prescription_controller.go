@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/ent/doctor"
-	"github.com/dhetporn/team08/ent/drug"
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/prescription"
+	"github.com/sut63/team08/ent"
+	"github.com/sut63/team08/ent/doctor"
+	"github.com/sut63/team08/ent/drug"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/prescription"
 )
 
 // PrescriptionController defines the struct for the prescription controller

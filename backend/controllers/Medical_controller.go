@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/ent/medical"
+	"github.com/sut63/team08/ent"
+	"github.com/sut63/team08/ent/medical"
 )
 
 // MedicalController defines the struct for the medical controller

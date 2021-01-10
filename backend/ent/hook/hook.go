@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent"
+	"github.com/sut63/team08/ent"
 )
 
 // The BloodtypeFunc type is an adapter to allow the use of ordinary

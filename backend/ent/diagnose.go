@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/department"
-	"github.com/dhetporn/team08/ent/diagnose"
-	"github.com/dhetporn/team08/ent/disease"
-	"github.com/dhetporn/team08/ent/doctor"
-	"github.com/dhetporn/team08/ent/patient"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/department"
+	"github.com/sut63/team08/ent/diagnose"
+	"github.com/sut63/team08/ent/disease"
+	"github.com/sut63/team08/ent/doctor"
+	"github.com/sut63/team08/ent/patient"
 )
 
 // Diagnose is the model entity for the Diagnose schema.

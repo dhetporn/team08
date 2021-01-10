@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/ent/bloodtype"
+	"github.com/sut63/team08/ent"
+	"github.com/sut63/team08/ent/bloodtype"
 	"github.com/gin-gonic/gin"
 )
 

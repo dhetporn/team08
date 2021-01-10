@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/department"
-	"github.com/dhetporn/team08/ent/diagnose"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/department"
+	"github.com/sut63/team08/ent/diagnose"
 )
 
 // DepartmentCreate is the builder for creating a Department entity.

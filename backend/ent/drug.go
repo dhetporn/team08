@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/drug"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/drug"
 )
 
 // Drug is the model entity for the Drug schema.

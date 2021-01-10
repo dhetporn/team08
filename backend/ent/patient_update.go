@@ -6,18 +6,18 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/bloodtype"
-	"github.com/dhetporn/team08/ent/coveredperson"
-	"github.com/dhetporn/team08/ent/diagnose"
-	"github.com/dhetporn/team08/ent/gender"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/predicate"
-	"github.com/dhetporn/team08/ent/prefix"
-	"github.com/dhetporn/team08/ent/prescription"
-	"github.com/dhetporn/team08/ent/rent"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/bloodtype"
+	"github.com/sut63/team08/ent/coveredperson"
+	"github.com/sut63/team08/ent/diagnose"
+	"github.com/sut63/team08/ent/gender"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/predicate"
+	"github.com/sut63/team08/ent/prefix"
+	"github.com/sut63/team08/ent/prescription"
+	"github.com/sut63/team08/ent/rent"
 )
 
 // PatientUpdate is the builder for updating Patient entities.

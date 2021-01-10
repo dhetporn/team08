@@ -6,11 +6,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/certificate"
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/certificate"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // CertificateDelete is the builder for deleting a Certificate entity.

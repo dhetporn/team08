@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dhetporn/team08/ent/examinationroom"
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/operative"
-	"github.com/dhetporn/team08/ent/operativerecord"
-	"github.com/dhetporn/team08/ent/tool"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/examinationroom"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/operative"
+	"github.com/sut63/team08/ent/operativerecord"
+	"github.com/sut63/team08/ent/tool"
 )
 
 // Operativerecord is the model entity for the Operativerecord schema.

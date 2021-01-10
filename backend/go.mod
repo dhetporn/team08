@@ -1,4 +1,4 @@
-module github.com/dhetporn/team08
+module github.com/sut63/team08
 
 go 1.14
 

@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/prefix"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/prefix"
 )
 
 // PrefixCreate is the builder for creating a Prefix entity.

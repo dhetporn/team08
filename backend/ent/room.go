@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/rent"
-	"github.com/dhetporn/team08/ent/room"
-	"github.com/dhetporn/team08/ent/roomtype"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/rent"
+	"github.com/sut63/team08/ent/room"
+	"github.com/sut63/team08/ent/roomtype"
 )
 
 // Room is the model entity for the Room schema.

@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/certificate"
-	"github.com/dhetporn/team08/ent/coveredperson"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/certificate"
+	"github.com/sut63/team08/ent/coveredperson"
 )
 
 // CertificateCreate is the builder for creating a Certificate entity.

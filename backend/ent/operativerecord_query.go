@@ -8,15 +8,15 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/dhetporn/team08/ent/examinationroom"
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/operative"
-	"github.com/dhetporn/team08/ent/operativerecord"
-	"github.com/dhetporn/team08/ent/predicate"
-	"github.com/dhetporn/team08/ent/tool"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/examinationroom"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/operative"
+	"github.com/sut63/team08/ent/operativerecord"
+	"github.com/sut63/team08/ent/predicate"
+	"github.com/sut63/team08/ent/tool"
 )
 
 // OperativerecordQuery is the builder for querying Operativerecord entities.

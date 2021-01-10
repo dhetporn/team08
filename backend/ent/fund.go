@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dhetporn/team08/ent/fund"
 	"github.com/facebookincubator/ent/dialect/sql"
+	"github.com/sut63/team08/ent/fund"
 )
 
 // Fund is the model entity for the Fund schema.

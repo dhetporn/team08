@@ -6,12 +6,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/diagnose"
-	"github.com/dhetporn/team08/ent/disease"
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/diagnose"
+	"github.com/sut63/team08/ent/disease"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // DiseaseUpdate is the builder for updating Disease entities.

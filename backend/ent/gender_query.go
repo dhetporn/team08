@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/dhetporn/team08/ent/gender"
-	"github.com/dhetporn/team08/ent/patient"
-	"github.com/dhetporn/team08/ent/predicate"
 	"github.com/facebookincubator/ent/dialect/sql"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/gender"
+	"github.com/sut63/team08/ent/patient"
+	"github.com/sut63/team08/ent/predicate"
 )
 
 // GenderQuery is the builder for querying Gender entities.

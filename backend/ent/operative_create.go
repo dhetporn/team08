@@ -7,10 +7,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dhetporn/team08/ent/operative"
-	"github.com/dhetporn/team08/ent/operativerecord"
 	"github.com/facebookincubator/ent/dialect/sql/sqlgraph"
 	"github.com/facebookincubator/ent/schema/field"
+	"github.com/sut63/team08/ent/operative"
+	"github.com/sut63/team08/ent/operativerecord"
 )
 
 // OperativeCreate is the builder for creating a Operative entity.

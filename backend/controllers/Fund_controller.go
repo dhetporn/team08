@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/ent/fund"
+	"github.com/sut63/team08/ent"
+	"github.com/sut63/team08/ent/fund"
 )
 
 // FundController defines the struct for the fund controller

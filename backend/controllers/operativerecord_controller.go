@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dhetporn/team08/ent"
-	"github.com/dhetporn/team08/ent/nurse"
-	"github.com/dhetporn/team08/ent/operative"
-	"github.com/dhetporn/team08/ent/operativerecord"
-	"github.com/dhetporn/team08/ent/tool"
-	"github.com/dhetporn/team08/ent/examinationroom"
+	"github.com/sut63/team08/ent"
+	"github.com/sut63/team08/ent/nurse"
+	"github.com/sut63/team08/ent/operative"
+	"github.com/sut63/team08/ent/operativerecord"
+	"github.com/sut63/team08/ent/tool"
+	"github.com/sut63/team08/ent/examinationroom"
 	"github.com/gin-gonic/gin"
 )
 
